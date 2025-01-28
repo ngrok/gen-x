@@ -176,3 +176,6 @@ dist
 
 package.json
 pnpm-lock.*
+*.yml
+*.yaml
+*.json
