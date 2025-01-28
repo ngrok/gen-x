@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import packageJson from "../package.json";
+import packageJson from "../package.json" assert { type: "json" };
 import { packageName, packageVersion } from "./meta.js";
 
 describe("meta", () => {
