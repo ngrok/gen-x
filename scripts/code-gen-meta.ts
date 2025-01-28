@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import packageJson from "../package.json";
+import packageJson from "../package.json" assert { type: "json" };
 
 const { name, version } = packageJson;
 

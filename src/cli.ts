@@ -1,4 +1,5 @@
-import { Command, Option } from "@commander-js/extra-typings";
+#!/usr/bin/env node
+import { Command, Option } from "commander";
 import { generateExports } from "./index.js";
 import { packageName, packageVersion } from "./meta.js";
 import { parseGlobOption } from "./parse-glob-option.js";
