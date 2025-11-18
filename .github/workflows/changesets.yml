@@ -1,4 +1,4 @@
-name: Release
+name: changesets
 on:
   push:
     branches:
@@ -7,8 +7,8 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
-    name: Release
+  changesets:
+    name: changesets
     runs-on: ubuntu-latest
     permissions:
       id-token: write
