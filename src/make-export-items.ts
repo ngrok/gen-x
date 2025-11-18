@@ -90,13 +90,30 @@ function makeNameFromFilepath(filepath: string, options: Options): string {
 	const parsed = path.parse(filepath);
 	const isCompilable = COMPILABLE_EXTENSIONS.has(parsed.ext);
 
+	// For non-compilable files, we need to preserve the full extension during transformation
+	// For example: FancyButton.module.css → fancy-button.module.css (not fancy-button-module.css)
+	if (!isCompilable) {
+		const pathWithoutFilename = parsed.dir;
+		// Extract all extensions (e.g., ".module.css" from "FancyButton.module.css")
+		const firstDot = parsed.base.indexOf(".");
+		const basename = firstDot === -1 ? parsed.base : parsed.base.slice(0, firstDot);
+		const allExtensions = firstDot === -1 ? "" : parsed.base.slice(firstDot);
+
+		// 3. replace the path with the replace tuples
+		const replacedPath = replaceName(pathWithoutFilename, options.replace);
+		// 4. transform the path and basename based on the mode
+		const transformedPath = transformFilepathByMode(replacedPath, options.mode);
+		const transformedBasename = transformFilepathByMode(basename, options.mode);
+
+		const fullPath = [transformedPath, transformedBasename].filter(Boolean).join(path.sep);
+		return fullPath + allExtensions;
+	}
+
 	// 1. remove the extension (only for compilable source files)
-	let name = isCompilable
-		? [parsed.dir, parsed.name].filter(Boolean).join(path.sep)
-		: [parsed.dir, parsed.base].filter(Boolean).join(path.sep); // Keep full filename for assets
+	let name = [parsed.dir, parsed.name].filter(Boolean).join(path.sep);
 
 	// 2. flatten index files to directory path (only for compilable files)
-	if (isCompilable && parsed.name === "index") {
+	if (parsed.name === "index") {
 		name = parsed.dir || ".";
 	}
 	// 3. replace the name with the replace tuples
