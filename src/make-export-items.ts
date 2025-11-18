@@ -99,9 +99,9 @@ function makeNameFromFilepath(filepath: string, options: Options): string {
 		const basename = firstDot === -1 ? parsed.base : parsed.base.slice(0, firstDot);
 		const allExtensions = firstDot === -1 ? "" : parsed.base.slice(firstDot);
 
-		// 3. replace the path with the replace tuples
+		// Replace the path with the replace tuples
 		const replacedPath = replaceName(pathWithoutFilename, options.replace);
-		// 4. transform the path and basename based on the mode
+		// Transform the path and basename based on the mode
 		const transformedPath = transformFilepathByMode(replacedPath, options.mode);
 		const transformedBasename = transformFilepathByMode(basename, options.mode);
 
