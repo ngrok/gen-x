@@ -1,4 +1,4 @@
-name: release-package
+name: release
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  release-package:
+  release:
     runs-on: ubuntu-latest
     if: github.repository == 'ngrok-oss/gen-x'
     steps:
