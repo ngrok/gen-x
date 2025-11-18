@@ -9,6 +9,9 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./styles/fancy-button.module.css": {
+      "import": "./dist/styles/FancyButton.module.css"
+    },
     "./styles/reset.css": {
       "import": "./dist/styles/reset.css"
     },

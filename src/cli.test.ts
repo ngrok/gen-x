@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { loadConfig, mergeConfigs } from "./config.js";
 import { generateExports } from "./index.js";
 import type { ReplaceTuples } from "./replace.js";
+import type { TransformMode } from "./transforms/mode.js";
 
 describe("CLI e2e tests with fixtures", () => {
 	const fixturesDir = path.join(process.cwd(), "fixtures");
@@ -13,6 +14,7 @@ describe("CLI e2e tests with fixtures", () => {
 		cliOptions: {
 			customCondition?: string;
 			replace?: ReplaceTuples;
+			mode?: TransformMode;
 		} = {},
 	) {
 		const fixturePath = path.join(fixturesDir, fixtureName);
@@ -295,14 +297,15 @@ describe("CLI e2e tests with fixtures", () => {
 	});
 
 	test("CSS files keep extension in export key", async () => {
-		const { pkg, fixturePath } = await runGenerateExports("css-assets");
+		const { pkg, fixturePath } = await runGenerateExports("css-assets", { mode: "kebab-case" });
 		const expected = await readExpectedPackageJson(fixturePath);
 
 		expect(pkg.exports).toEqual(expected.exports);
 
-		// CSS files should have .css extension in the export key
+		// CSS files should have .css extension in the export key (kebab-cased)
 		expect(pkg.exports).toHaveProperty("./styles/theme.css");
 		expect(pkg.exports).toHaveProperty("./styles/reset.css");
+		expect(pkg.exports).toHaveProperty("./styles/fancy-button.module.css");
 
 		// CSS exports should not have a "types" field, only "import"
 		const themeExport = pkg.exports["./styles/theme.css"];
@@ -310,6 +313,12 @@ describe("CLI e2e tests with fixtures", () => {
 			import: "./dist/styles/theme.css",
 		});
 		expect(themeExport).not.toHaveProperty("types");
+
+		// Module CSS should preserve .module.css extension (not -module.css)
+		const moduleExport = pkg.exports["./styles/fancy-button.module.css"];
+		expect(moduleExport).toEqual({
+			import: "./dist/styles/FancyButton.module.css",
+		});
 	});
 
 	test("CSS files get custom condition for live types", async () => {
