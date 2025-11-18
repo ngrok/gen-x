@@ -29,17 +29,17 @@ This will scan your `src/` directory and generate package.json exports like:
 
 ```json
 {
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./utils": {
-      "import": "./dist/utils.js",
-      "types": "./dist/utils.d.ts"
-    }
-  }
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./utils": {
+			"import": "./dist/utils.js",
+			"types": "./dist/utils.d.ts"
+		}
+	}
 }
 ```
 
@@ -65,12 +65,12 @@ Create a `gen-x.config.ts` file for type-safe configuration:
 import { defineConfig } from "@ngrok/gen-x";
 
 export default defineConfig({
-  input: "src",
-  output: "dist",
-  mode: "camelCase",
-  customCondition: "@my-package/source",
-  include: ["**/*.{ts,tsx,js,jsx,css}"],
-  exclude: ["**/*.test.*", "**/*.d.ts"],
+	input: "src",
+	output: "dist",
+	mode: "camelCase",
+	customCondition: "@my-package/source",
+	include: ["**/*.{ts,tsx,js,jsx,css}"],
+	exclude: ["**/*.test.*", "**/*.d.ts"],
 });
 ```
 
@@ -78,8 +78,8 @@ Or use `gen-x.config.json`:
 
 ```json
 {
-  "mode": "camelCase",
-  "customCondition": "@my-package/source"
+	"mode": "camelCase",
+	"customCondition": "@my-package/source"
 }
 ```
 
@@ -87,9 +87,9 @@ Or add to `package.json`:
 
 ```json
 {
-  "genx": {
-    "mode": "camelCase"
-  }
+	"genx": {
+		"mode": "camelCase"
+	}
 }
 ```
 
@@ -127,7 +127,7 @@ npx gen-x
 npx gen-x --mode camelCase
 # hello-world.ts → ./helloWorld
 
-# Transform to kebab-case  
+# Transform to kebab-case
 npx gen-x --mode kebab-case
 # HelloWorld.ts → ./hello-world
 ```
@@ -150,7 +150,7 @@ For consuming packages in the same monorepo to use source TypeScript files:
 ```typescript
 // gen-x.config.ts
 export default {
-  customCondition: "@my-org/my-package/source"
+	customCondition: "@my-org/my-package/source",
 };
 ```
 
@@ -158,13 +158,13 @@ Generates:
 
 ```json
 {
-  "exports": {
-    ".": {
-      "@my-org/my-package/source": "./src/index.ts",
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  }
+	"exports": {
+		".": {
+			"@my-org/my-package/source": "./src/index.ts",
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	}
 }
 ```
 
@@ -183,9 +183,9 @@ Output:
 
 ```json
 {
-  "./styles/theme.css": {
-    "import": "./dist/styles/theme.css"
-  }
+	"./styles/theme.css": {
+		"import": "./dist/styles/theme.css"
+	}
 }
 ```
 
@@ -205,9 +205,9 @@ npx gen-x --exclude "**/internal/**" --exclude "**/*.test.*"
 import { generateExports } from "@ngrok/gen-x";
 
 const exports = await generateExports({
-  input: "src",
-  output: "dist",
-  mode: "camelCase",
+	input: "src",
+	output: "dist",
+	mode: "camelCase",
 });
 
 console.log(exports);

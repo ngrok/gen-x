@@ -1,5 +1,5 @@
 export function isEmail(str: string): boolean {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str.slice(0, 320));
 }
 
 export function isUrl(str: string): boolean {
