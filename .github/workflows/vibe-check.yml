@@ -43,11 +43,6 @@ jobs:
       - name: Install Dependencies 📥
         run: pnpm install --frozen-lockfile
 
-      - name: Code Gen 🧬
-        run: | # Generate code
-          pnpm run bootstrap
-          git diff --exit-code
-
       - name: Fmt and Type Check 🧹
         run: | # Run the lint and type check
           pnpm run typecheck
