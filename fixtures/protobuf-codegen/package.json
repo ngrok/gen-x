@@ -1,0 +1,6 @@
+{
+  "name": "@acme/grpc-client",
+  "version": "1.0.0",
+  "description": "gRPC client with generated protobuf code",
+  "type": "module"
+}

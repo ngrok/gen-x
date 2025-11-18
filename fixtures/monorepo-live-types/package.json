@@ -1,0 +1,6 @@
+{
+  "name": "@acme/monorepo-pkg",
+  "version": "1.0.0",
+  "description": "Package with custom condition for live types in monorepo",
+  "type": "module"
+}

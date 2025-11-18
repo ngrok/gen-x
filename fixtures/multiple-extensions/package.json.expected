@@ -1,0 +1,33 @@
+{
+  "name": "@acme/mixed-extensions",
+  "version": "1.0.0",
+  "description": "Package with various file extensions",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./commonjs": {
+      "import": "./dist/commonjs.js",
+      "types": "./dist/commonjs.d.ts"
+    },
+    "./component": {
+      "import": "./dist/component.js",
+      "types": "./dist/component.d.ts"
+    },
+    "./jsx-component": {
+      "import": "./dist/jsx-component.js",
+      "types": "./dist/jsx-component.d.ts"
+    },
+    "./legacy": {
+      "import": "./dist/legacy.js",
+      "types": "./dist/legacy.d.ts"
+    },
+    "./modern": {
+      "import": "./dist/modern.js",
+      "types": "./dist/modern.d.ts"
+    }
+  }
+}

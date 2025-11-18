@@ -1,0 +1,5 @@
+{
+  "customCondition": "@acme/monorepo-pkg/source",
+  "input": "src",
+  "output": "dist"
+}

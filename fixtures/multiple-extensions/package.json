@@ -1,0 +1,6 @@
+{
+  "name": "@acme/mixed-extensions",
+  "version": "1.0.0",
+  "description": "Package with various file extensions",
+  "type": "module"
+}

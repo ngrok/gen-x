@@ -1,6 +1,6 @@
-import path from "path";
-import { ReplaceTuples } from "./replace.js";
-import { TransformMode } from "./transforms/mode.js";
+import path from "node:path";
+import type { ReplaceTuples } from "./replace.js";
+import type { TransformMode } from "./transforms/mode.js";
 import { transformFilepathByMode } from "./transforms/transform-filepath-by-mode.js";
 
 export type ExportItem = {
@@ -42,9 +42,11 @@ type Options = {
  * 3. Transform the name based on the mode
  */
 function makeExportItems(filepaths: Array<string>, options: Options): Array<ExportItem> {
+	// srcDir should be project-relative for package.json, not absolute
+	const srcDir = path.relative(process.cwd(), options.input) || ".";
+
 	return filepaths.map((filepath) => {
-		const srcDir = options.input;
-		const exportPath = path.relative(srcDir, filepath);
+		const exportPath = path.relative(options.input, filepath);
 		const name = makeNameFromFilepath(exportPath, options);
 
 		return {
@@ -61,20 +63,45 @@ export {
 };
 
 /**
+ * Extensions for compilable source files that should be stripped from export keys.
+ * Non-compilable files (CSS, JSON, etc) keep their extensions.
+ */
+const COMPILABLE_EXTENSIONS = new Set([
+	//,
+	".ts",
+	".tsx",
+	".cts",
+	".mts",
+	".js",
+	".jsx",
+	".mjs",
+	".cjs",
+]);
+
+/**
  * Given a file path and options, return the name of the export.
  * The order of operations is:
- *  1. Take the file path and remove the extension
- *  2. Replace the name with the replace tuples
- *  3. Transform the name based on the mode
+ *  1. Take the file path and remove the extension (only for compilable files)
+ *  2. If the filename is "index", flatten to the directory path
+ *  3. Replace the name with the replace tuples
+ *  4. Transform the name based on the mode
  */
 function makeNameFromFilepath(filepath: string, options: Options): string {
 	const parsed = path.parse(filepath);
+	const isCompilable = COMPILABLE_EXTENSIONS.has(parsed.ext);
 
-	// 1. remove the extension
-	const name = [parsed.dir, parsed.name].filter(Boolean).join(path.sep);
-	// 2. replace the name with the replace tuples
+	// 1. remove the extension (only for compilable source files)
+	let name = isCompilable
+		? [parsed.dir, parsed.name].filter(Boolean).join(path.sep)
+		: [parsed.dir, parsed.base].filter(Boolean).join(path.sep); // Keep full filename for assets
+
+	// 2. flatten index files to directory path (only for compilable files)
+	if (isCompilable && parsed.name === "index") {
+		name = parsed.dir || ".";
+	}
+	// 3. replace the name with the replace tuples
 	const replacedName = replaceName(name, options.replace);
-	// 3. transform the name based on the mode
+	// 4. transform the name based on the mode
 	const transformedName = transformFilepathByMode(replacedName, options.mode);
 
 	return transformedName;

@@ -1,0 +1,28 @@
+{
+  "name": "@acme/react-components",
+  "version": "2.0.0",
+  "description": "React component library",
+  "type": "module",
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components/Button": {
+      "import": "./dist/components/Button/index.js",
+      "types": "./dist/components/Button/index.d.ts"
+    },
+    "./components/Card": {
+      "import": "./dist/components/Card/index.js",
+      "types": "./dist/components/Card/index.d.ts"
+    },
+    "./components/Input": {
+      "import": "./dist/components/Input/index.js",
+      "types": "./dist/components/Input/index.d.ts"
+    }
+  }
+}
