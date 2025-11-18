@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.2.1
+
+### Patch Changes
+
+- [#19](https://github.com/ngrok-oss/gen-x/pull/19) [`57457e0`](https://github.com/ngrok-oss/gen-x/commit/57457e0f51ad85975d09a2bf35321e88cf57b8de) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Fixed mode transforms incorrectly converting multi-part extensions like `.module.css` to `-module.css`. Export keys now preserve the full extension while transforming only the basename (e.g., `FancyButton.module.css` → `./fancy-button.module.css` with kebab-case mode)
+
 ## 0.2.0
 
 ### Minor Changes
