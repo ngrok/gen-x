@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { ExportsField } from "./build-package-json-exports.js";
+import type { ExportsField } from "./build-package-json-exports.js";
 
 type Args = {
 	/**
@@ -23,11 +23,24 @@ type Args = {
  * else the changes will be written to the package.json file.
  */
 async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: Args) {
+	let originalPackageJsonFile: string;
+	let originalPackageJson: Record<string, unknown>;
+
 	// read the package.json file
-	const originalPackageJsonFile = await fs.readFile(packageJsonPath, "utf8");
+	try {
+		originalPackageJsonFile = await fs.readFile(packageJsonPath, "utf8");
+	} catch (error) {
+		console.error(`Failed to read package.json at ${packageJsonPath}`);
+		throw error;
+	}
 
 	// convert the package.json file to a JSON object
-	const originalPackageJson = JSON.parse(originalPackageJsonFile) as Record<string, unknown>;
+	try {
+		originalPackageJson = JSON.parse(originalPackageJsonFile) as Record<string, unknown>;
+	} catch (error) {
+		console.error(`Invalid JSON in package.json at ${packageJsonPath}`);
+		throw error;
+	}
 
 	// delete the exports field from the package.json object so it is always at the end
 	delete originalPackageJson.exports;
@@ -41,7 +54,7 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 	// don't write to disk if dry run is set, just preview the changes in stdout
 	if (dryRun) {
 		console.log("Dry run:");
-		console.log(updatedPackageJson);
+		console.log(JSON.stringify(updatedPackageJson, null, 2));
 		return;
 	}
 
@@ -60,7 +73,12 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 	data += eofNewline;
 
 	// write the updated package.json file
-	await fs.writeFile(packageJsonPath, data, "utf8");
+	try {
+		await fs.writeFile(packageJsonPath, data, "utf8");
+	} catch (error) {
+		console.error(`Failed to write package.json at ${packageJsonPath}`);
+		throw error;
+	}
 }
 
 export {

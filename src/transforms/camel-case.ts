@@ -1,6 +1,4 @@
-import path from "node:path";
 import { extractWords } from "./extract-words.js";
-import { getPathParts } from "./get-path-parts.js";
 import { transformPath } from "./transform-path.js";
 
 /**

@@ -1,0 +1,23 @@
+{
+  "name": "@acme/basic-typescript",
+  "version": "1.0.0",
+  "description": "Basic TypeScript library",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "types": "./dist/logger.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils.js",
+      "types": "./dist/utils.d.ts"
+    }
+  }
+}

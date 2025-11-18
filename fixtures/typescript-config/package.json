@@ -1,0 +1,9 @@
+{
+  "name": "@acme/typescript-config",
+  "version": "1.0.0",
+  "description": "Package with TypeScript config file",
+  "type": "module",
+  "devDependencies": {
+    "@ngrok/gen-x": "workspace:*"
+  }
+}

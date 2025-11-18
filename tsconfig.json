@@ -3,28 +3,34 @@
     /* Base Options */
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "target": "ES2022",
+    "target": "ES2023",
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
-    // "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": true,
+    "resolvePackageJsonExports": true,
 
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noUncheckedSideEffectImports": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 
     /* If transpiling with TypeScript */
     "module": "NodeNext",
 
     /* AND if you're building for a library */
     "declaration": true,
+    "sourceMap": true,
 
     /* Don't emit in base config */
     "noEmit": true,
 
     /* If your code doesn't run in the DOM: */
-    "lib": ["ES2022"]
-  }
+    "lib": ["ES2023"]
+  },
+  "exclude": ["fixtures"]
 }

@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import { Command, Option } from "commander";
+import pkg from "../package.json" with { type: "json" };
+import { loadConfig, mergeConfigs } from "./config.js";
 import { generateExports } from "./index.js";
-import { packageName, packageVersion } from "./meta.js";
 import { parseGlobOption } from "./parse-glob-option.js";
 import { parseReplaceOption, replaceSentinel, type ReplaceTuples } from "./replace.js";
 import { transformMode, transformModes } from "./transforms/mode.js";
 import { updatePackageJson } from "./update-package-json.js";
+
+const packageName = pkg.name;
+const packageVersion = pkg.version;
 
 const defaultReplaceValue: ReplaceTuples = [];
 
@@ -13,8 +17,15 @@ const program = new Command()
 	.name(packageName)
 	.version(packageVersion)
 	.option("--dry-run, --dryRun", "Preview changes to standard out for debugging.", false)
-	.option("--exclude <exclude...>", "A list of globs to exclude file paths from.", ["**/*.test.*"])
-	.option("--include <include...>", "A list of globs to include file paths from.", ["**/*"])
+	.option("--exclude <exclude...>", "A list of globs to exclude file paths from.", [
+		"**/*.d.ts",
+		"**/*.test.*",
+		"**/*.spec.*",
+		"**/__tests__/**",
+	])
+	.option("--include <include...>", "A list of globs to include file paths from.", [
+		"**/*.{ts,tsx,cts,mts,js,jsx,mjs,cjs,css}",
+	])
 	.option("-i, --input <input>", "The input directory to gather file paths from.", "src")
 	.addOption(
 		new Option("-m, --mode <mode>", "The mode to transform filepath segments.")
@@ -38,24 +49,46 @@ async function cli() {
 	const command = program.parse(process.argv);
 	const options = command.opts();
 
+	// Load config file
+	const fileConfig = await loadConfig(process.cwd());
+
+	// Merge: CLI > config file > defaults
+	const defaults = {
+		input: "src",
+		output: "dist",
+		package: "package.json",
+		exclude: ["**/*.d.ts", "**/*.test.*", "**/*.spec.*", "**/__tests__/**"],
+		include: ["**/*.{ts,tsx,cts,mts,js,jsx,mjs,cjs,css}"],
+		mode: "passthrough" as const,
+		replace: [] as ReplaceTuples,
+		customCondition: null as string | null,
+	};
+
+	const config = mergeConfigs(
+		{
+			input: options.input?.trim(),
+			output: options.output?.trim(),
+			exclude: options.exclude ? parseGlobOption(options.exclude) : undefined,
+			include: options.include ? parseGlobOption(options.include) : undefined,
+			mode: options.mode,
+			replace: options.replace,
+			customCondition: options.customCondition?.trim(),
+		},
+		fileConfig,
+		defaults,
+	);
+
 	const dryRun = Boolean(options.dryRun);
-	const exclude = parseGlobOption(options.exclude);
-	const include = parseGlobOption(options.include);
-	const input = options.input.trim() || `${process.cwd()}/src`;
-	const mode = options.mode ?? "passthrough";
-	const output = options.output.trim() || `${process.cwd()}/dist`;
-	const packageJsonPath = options.package.trim() || `${process.cwd()}/package.json`;
-	const replace = options.replace || [];
-	const customCondition = options.customCondition?.trim() || null;
+	const packageJsonPath = options.package?.trim() || "package.json";
 
 	const exports = await generateExports({
-		customCondition,
-		exclude,
-		include,
-		input,
-		mode,
-		output,
-		replace,
+		customCondition: config.customCondition,
+		exclude: config.exclude,
+		include: config.include,
+		input: config.input,
+		mode: config.mode,
+		output: config.output,
+		replace: config.replace,
 	});
 
 	await updatePackageJson({

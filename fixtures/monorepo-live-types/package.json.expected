@@ -1,0 +1,19 @@
+{
+  "name": "@acme/monorepo-pkg",
+  "version": "1.0.0",
+  "description": "Package with custom condition for live types in monorepo",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@acme/monorepo-pkg/source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "@acme/monorepo-pkg/source": "./src/client.ts",
+      "import": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    }
+  }
+}

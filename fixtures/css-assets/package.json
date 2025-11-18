@@ -1,0 +1,19 @@
+{
+  "name": "@acme/css-assets",
+  "version": "1.0.0",
+  "description": "Package with CSS and other asset files",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles/reset.css": {
+      "import": "./dist/styles/reset.css"
+    },
+    "./styles/theme.css": {
+      "import": "./dist/styles/theme.css"
+    }
+  }
+}

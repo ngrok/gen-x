@@ -1,0 +1,6 @@
+{
+  "name": "@acme/nested-structure",
+  "version": "1.0.0",
+  "description": "Library with nested directories and index files",
+  "type": "module"
+}

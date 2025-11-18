@@ -1,0 +1,33 @@
+{
+  "name": "@acme/nested-structure",
+  "version": "1.0.0",
+  "description": "Library with nested directories and index files",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./lib": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    },
+    "./lib/helpers": {
+      "import": "./dist/lib/helpers/index.js",
+      "types": "./dist/lib/helpers/index.d.ts"
+    },
+    "./lib/helpers/array": {
+      "import": "./dist/lib/helpers/array.js",
+      "types": "./dist/lib/helpers/array.d.ts"
+    },
+    "./lib/helpers/string": {
+      "import": "./dist/lib/helpers/string.js",
+      "types": "./dist/lib/helpers/string.d.ts"
+    },
+    "./lib/validators": {
+      "import": "./dist/lib/validators.js",
+      "types": "./dist/lib/validators.d.ts"
+    }
+  }
+}

@@ -1,9 +1,24 @@
-name: CI Checks
+name: Vibe Check
 
-on: push
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: vibe-check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  DO_NOT_TRACK: 1
+  TURBO_TELEMETRY_DISABLED: 1
+  VERCEL_TELEMETRY_DISABLED: 1
 
 jobs:
-  ci-checks:
+  vibe-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -11,17 +26,22 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install pnpm 📦
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+          cache-dependency-path: "pnpm-lock.yaml"
 
       - name: Setup pnpm 📦
         uses: pnpm/action-setup@v4
 
       - name: Install Dependencies 📥
-        run: | # Install node packages
-          pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Code Gen 🧬
         run: | # Generate code
@@ -38,6 +58,7 @@ jobs:
           pnpm run test
 
       - name: Ensure Package is Publishable 🧐
-        run: | # Run the prepublish hook to ensure the package is publishable, and that the package.json is up to date
+        run:
+          | # Run the prepublish hook to ensure the package is publishable, and that the package.json is up to date
           pnpm run prepublishOnly
           git diff --exit-code
