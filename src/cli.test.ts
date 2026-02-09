@@ -1,10 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
-import { loadConfig, mergeConfigs } from "./config.js";
-import { generateExports } from "./index.js";
+
 import type { ReplaceTuples } from "./replace.js";
 import type { TransformMode } from "./transforms/mode.js";
+
+import { loadConfig, mergeConfigs } from "./config.js";
+import { generateExports } from "./index.js";
 
 describe("CLI e2e tests with fixtures", () => {
 	const fixturesDir = path.join(process.cwd(), "fixtures");

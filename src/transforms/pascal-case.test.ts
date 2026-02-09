@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { pascalCase, pascalCasePath } from "./pascal-case.js";
 
 describe("pascalCase", () => {

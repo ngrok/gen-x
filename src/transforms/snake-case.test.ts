@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { snakeCase, snakeCasePath } from "./snake-case.js";
 
 describe("snakeCase", () => {

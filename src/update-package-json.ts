@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+
 import type { ExportsField } from "./build-package-json-exports.js";
 
 type Args = {

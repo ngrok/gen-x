@@ -44,9 +44,10 @@ jobs:
       - name: Install Dependencies 📥
         run: pnpm install --frozen-lockfile
 
-      - name: Fmt and Type Check 🧹
+      - name: Fmt, Lint, and Type Check 🧹
         run: | # Run the lint and type check
           pnpm run typecheck
+          pnpm run lint
           pnpm run fmt:check
 
       - name: Test 🧪
@@ -54,7 +55,6 @@ jobs:
           pnpm run test
 
       - name: Ensure Package is Publishable 🧐
-        run:
-          | # Run the prepublish hook to ensure the package is publishable, and that the package.json is up to date
+        run: | # Run the prepublish hook to ensure the package is publishable, and that the package.json is up to date
           pnpm run prepublishOnly
           git diff --exit-code

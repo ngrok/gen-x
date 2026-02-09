@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { kebabCase, kebabCasePath } from "./kebab-case.js";
 
 describe("kebabCase", () => {

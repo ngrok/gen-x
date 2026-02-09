@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { parseRegexString } from "./regex.js";
 
 describe("parseRegexString", () => {

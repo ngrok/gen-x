@@ -8,7 +8,10 @@ export interface ButtonProps {
 
 export function Button({ onClick, children, variant = "primary" }: ButtonProps) {
 	return (
-		<button onClick={onClick} className={`btn btn-${variant}`}>
+		<button
+			onClick={onClick}
+			className={`btn btn-${variant}`}
+		>
 			{children}
 		</button>
 	);

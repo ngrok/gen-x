@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { camelCase, camelCasePath } from "./camel-case.js";
 
 describe("camelCase", () => {

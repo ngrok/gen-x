@@ -4,6 +4,7 @@ export function isEmail(str: string): boolean {
 
 export function isUrl(str: string): boolean {
 	try {
+		// oxlint-disable-next-line
 		new URL(str);
 		return true;
 	} catch {

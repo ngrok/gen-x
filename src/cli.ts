@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command, Option } from "commander";
+
 import pkg from "../package.json" with { type: "json" };
 import { loadConfig, mergeConfigs } from "./config.js";
 import { generateExports } from "./index.js";

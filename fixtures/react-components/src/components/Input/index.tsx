@@ -7,5 +7,12 @@ export interface InputProps {
 }
 
 export function Input({ value, onChange, placeholder }: InputProps) {
-	return <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />;
+	return (
+		<input
+			type="text"
+			value={value}
+			onChange={(e) => onChange(e.target.value)}
+			placeholder={placeholder}
+		/>
+	);
 }
