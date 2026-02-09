@@ -1,4 +1,5 @@
 import path from "node:path";
+
 import type { ExportItem } from "./make-export-items.js";
 
 export type ExportEntry = string | ({ import: string; types: string } & Record<string, string>);

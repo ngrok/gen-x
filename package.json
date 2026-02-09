@@ -9,17 +9,16 @@
   },
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@10.22.0",
-  "engines": {
-    "node": "^22.0.0"
-  },
+  "packageManager": "pnpm@10.29.2",
   "keywords": [],
   "scripts": {
     "build": "pnpm run compile",
     "changeset": "changeset",
     "compile": "tsc --project tsconfig.compile.json",
-    "fmt:check": "prettier --check .",
-    "fmt": "prettier --write .",
+    "fmt:check": "oxfmt --check .",
+    "fmt": "oxfmt --write .",
+    "lint:fix": "oxlint --fix .",
+    "lint": "oxlint .",
     "precompile": "rm -rf dist tsconfig.compile.tsbuildinfo",
     "prepublishOnly": "pnpm run compile",
     "test": "vitest",
@@ -39,19 +38,19 @@
   },
   "dependencies": {
     "@commander-js/extra-typings": "14.0.0",
-    "commander": "14.0.2",
-    "esbuild": "^0.27.0",
+    "commander": "14.0.3",
+    "esbuild": "0.27.3",
     "tinyglobby": "0.2.15"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.29.7",
-    "@ianvs/prettier-plugin-sort-imports": "4.7.0",
+    "@changesets/changelog-github": "0.5.2",
+    "@changesets/cli": "2.29.8",
     "@total-typescript/ts-reset": "0.6.1",
-    "@types/node": "22.19.1",
-    "prettier": "3.6.2",
-    "tsx": "4.20.6",
+    "@types/node": "24.10.12",
+    "oxfmt": "0.28.0",
+    "oxlint": "1.43.0",
+    "tsx": "4.21.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.10"
+    "vitest": "4.0.18"
   }
 }

@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
-import { formatDate, parseDate } from "./utils.js";
+
+import { formatDate } from "./utils.js";
 
 test("formatDate", () => {
 	const date = new Date("2024-01-01");

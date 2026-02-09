@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { getPathParts } from "./get-path-parts.js";
 
 describe("getPathParts", () => {

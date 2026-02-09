@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { parseReplaceOption } from "./replace.js";
 
 describe("parseReplaceOption", () => {

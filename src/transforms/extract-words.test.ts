@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { extractWords } from "./extract-words.js";
 
 describe("extractWords", () => {

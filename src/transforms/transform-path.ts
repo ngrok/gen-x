@@ -1,4 +1,5 @@
 import path from "node:path";
+
 import { getPathParts } from "./get-path-parts.js";
 
 /**

@@ -1,6 +1,7 @@
+import { transformSync } from "esbuild";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { transformSync } from "esbuild";
+
 import type { ReplaceTuples } from "./replace.js";
 import type { TransformMode } from "./transforms/mode.js";
 
