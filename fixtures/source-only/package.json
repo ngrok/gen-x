@@ -1,0 +1,6 @@
+{
+  "name": "@acme/source-only-pkg",
+  "version": "1.0.0",
+  "description": "Package with source-only exports (no import/types)",
+  "type": "module"
+}

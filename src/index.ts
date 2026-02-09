@@ -10,13 +10,13 @@ import { makeExportItems } from "./make-export-items.js";
  * Generate the exports object for the package given the arguments.
  */
 async function generateExports(args: Config): Promise<ExportsField> {
-	const { customCondition, exclude, include, input, output, mode, replace } = parseArguments(args);
+	const { customCondition, exclude, include, input, output, mode, replace, sourceOnly } = parseArguments(args);
 
 	const filepaths = await gatherFilepaths({ input, include, exclude });
 
 	const exportItems = makeExportItems(filepaths, { input, mode, replace });
 
-	const exports = buildPackageJsonExports(exportItems, { outputDir: output, customCondition });
+	const exports = buildPackageJsonExports(exportItems, { outputDir: output, customCondition, sourceOnly });
 
 	return exports;
 }
@@ -42,6 +42,7 @@ function parseArguments(args: Config): Required<Config> {
 	// output: keep relative for package.json
 	const output = args.output?.trim() || "dist";
 	const replace = args.replace ?? [];
+	const sourceOnly = args.sourceOnly ?? false;
 
 	return {
 		customCondition,
@@ -51,5 +52,6 @@ function parseArguments(args: Config): Required<Config> {
 		mode,
 		output,
 		replace,
+		sourceOnly,
 	};
 }

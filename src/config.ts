@@ -51,6 +51,12 @@ export type Config = {
 	 * @default []
 	 */
 	replace?: ReplaceTuples;
+	/**
+	 * When true, emit plain string entries pointing directly to source files,
+	 * omitting `import`, `types`, and any custom condition from the exports map.
+	 * @default false
+	 */
+	sourceOnly?: boolean;
 };
 
 /**

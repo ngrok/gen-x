@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { ExportItem } from "./make-export-items.js";
 
-export type ExportEntry = string | ({ import: string; types: string } & Record<string, string>);
+export type ExportEntry = string | ({ import: string; types?: string } & Record<string, string>);
 export type ExportsField = Record<string, ExportEntry>;
 
 type Options = {
@@ -15,6 +15,12 @@ type Options = {
 	 * @default `dist`
 	 */
 	outputDir?: string;
+	/**
+	 * When true, emit plain string entries pointing directly to source files,
+	 * omitting `import`, `types`, and any custom condition.
+	 * @default false
+	 */
+	sourceOnly?: boolean;
 };
 
 /**
@@ -23,6 +29,7 @@ type Options = {
 function buildPackageJsonExports(exportItems: Array<ExportItem>, options?: Options): ExportsField {
 	const outputDir = options?.outputDir?.trim() || "dist";
 	const customCondition = options?.customCondition?.trim();
+	const sourceOnly = options?.sourceOnly ?? false;
 
 	// Track export keys to detect collisions
 	const exportKeyMap = new Map<string, string>();
@@ -61,18 +68,24 @@ function buildPackageJsonExports(exportItems: Array<ExportItem>, options?: Optio
 			exportKeyMap.set(name, sourcePath);
 
 			// Build export entry
+			// sourceOnly: plain string pointing to source file, no import/types/custom condition
 			// For compilable sources: add import, types
 			// For assets (CSS, etc): only add import (and optional custom condition)
-			const entry = isAsset
-				? {
-						...(customCondition ? { [customCondition]: sourcePath } : {}),
-						import: exportPath,
-					}
-				: {
-						...(customCondition ? { [customCondition]: sourcePath } : {}),
-						import: `${exportPath}.js`,
-						types: `${exportPath}.d.ts`,
-					};
+			let entry: ExportEntry;
+			if (sourceOnly) {
+				entry = sourcePath;
+			} else if (isAsset) {
+				entry = {
+					...(customCondition ? { [customCondition]: sourcePath } : {}),
+					import: exportPath,
+				};
+			} else {
+				entry = {
+					...(customCondition ? { [customCondition]: sourcePath } : {}),
+					import: `${exportPath}.js`,
+					types: `${exportPath}.d.ts`,
+				};
+			}
 
 			acc[name] = entry as ExportEntry;
 

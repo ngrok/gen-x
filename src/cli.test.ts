@@ -17,6 +17,7 @@ describe("CLI e2e tests with fixtures", () => {
 			customCondition?: string;
 			replace?: ReplaceTuples;
 			mode?: TransformMode;
+			sourceOnly?: boolean;
 		} = {},
 	) {
 		const fixturePath = path.join(fixturesDir, fixtureName);
@@ -50,6 +51,7 @@ describe("CLI e2e tests with fixtures", () => {
 				replace: config.replace,
 				include: config.include,
 				exclude: config.exclude,
+				sourceOnly: config.sourceOnly,
 			});
 
 			// Build the result package.json (simulating what update-package-json does)
@@ -321,6 +323,19 @@ describe("CLI e2e tests with fixtures", () => {
 		expect(moduleExport).toEqual({
 			import: "./dist/styles/FancyButton.module.css",
 		});
+	});
+
+	test("source-only fixture emits plain source paths", async () => {
+		const { pkg, fixturePath } = await runGenerateExports("source-only", {
+			sourceOnly: true,
+		});
+		const expected = await readExpectedPackageJson(fixturePath);
+
+		expect(pkg.exports).toEqual(expected.exports);
+
+		// Verify entries are plain strings (no import/types/custom condition)
+		expect(pkg.exports["."]).toBe("./src/index.ts");
+		expect(pkg.exports["./client"]).toBe("./src/client.ts");
 	});
 
 	test("CSS files get custom condition for live types", async () => {
