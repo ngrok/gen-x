@@ -8,6 +8,7 @@ import { parseGlobOption } from "./parse-glob-option.js";
 import { parseReplaceOption, replaceSentinel, type ReplaceTuples } from "./replace.js";
 import { transformMode, transformModes } from "./transforms/mode.js";
 import { updatePackageJson } from "./update-package-json.js";
+import { watch } from "./watch.js";
 
 const packageName = pkg.name;
 const packageVersion = pkg.version;
@@ -18,6 +19,7 @@ const program = new Command()
 	.name(packageName)
 	.version(packageVersion)
 	.option("--dry-run, --dryRun", "Preview changes to standard out for debugging.", false)
+	.option("-w, --watch", "Watch the input directory for changes and regenerate exports.", false)
 	.option("--exclude <exclude...>", "A list of globs to exclude file paths from.", [
 		"**/*.d.ts",
 		"**/*.test.*",
@@ -87,9 +89,10 @@ async function cli() {
 	);
 
 	const dryRun = Boolean(options.dryRun);
+	const watchMode = Boolean(options.watch);
 	const packageJsonPath = options.package?.trim() || "package.json";
 
-	const exports = await generateExports({
+	const resolvedConfig = {
 		customCondition: config.customCondition,
 		exclude: config.exclude,
 		include: config.include,
@@ -98,7 +101,14 @@ async function cli() {
 		output: config.output,
 		replace: config.replace,
 		sourceOnly: config.sourceOnly,
-	});
+	};
+
+	if (watchMode) {
+		await watch({ config: resolvedConfig, packageJsonPath });
+		return;
+	}
+
+	const exports = await generateExports(resolvedConfig);
 
 	await updatePackageJson({
 		dryRun,
