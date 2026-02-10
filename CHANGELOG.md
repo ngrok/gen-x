@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.4.0
+
+### Minor Changes
+
+- [#24](https://github.com/ngrok-oss/gen-x/pull/24) [`36cbeb4`](https://github.com/ngrok-oss/gen-x/commit/36cbeb402ce527feae3490f3bb9387e0dd4b3fd3) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Added `--watch` / `-w` flag to watch the input directory for file changes and automatically regenerate `package.json#exports`. Config is loaded once at startup, and writes are skipped when exports are unchanged, making it efficient for use across many packages in a monorepo.
+
 ## 0.3.0
 
 ### Minor Changes
