@@ -23,26 +23,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Install pnpm 📦
         uses: pnpm/action-setup@v4
+        # use version from package.json#packageManager field
         with:
           run_install: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "pnpm"
-          cache-dependency-path: "pnpm-lock.yaml"
-
-      - name: Setup pnpm 📦
-        uses: pnpm/action-setup@v4
 
       - name: Install Dependencies 📥
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm install
 
       - name: Fmt, Lint, and Type Check 🧹
         run: | # Run the lint and type check
