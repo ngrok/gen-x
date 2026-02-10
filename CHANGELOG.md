@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.3.0
+
+### Minor Changes
+
+- [#22](https://github.com/ngrok-oss/gen-x/pull/22) [`fdb1104`](https://github.com/ngrok-oss/gen-x/commit/fdb1104c52d0d91d3258a13e2f325d3965bb82ba) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Add `--sourceOnly` option that emits plain source file paths in the exports map, omitting `import`, `types`, and custom condition entries.
+
 ## 0.2.1
 
 ### Patch Changes
