@@ -7,15 +7,31 @@ import { generateExports } from "./index.js";
 import { updatePackageJson } from "./update-package-json.js";
 
 type WatchOptions = {
+	/**
+	 * The resolved gen-x configuration. Loaded once at startup to avoid
+	 * repeated esbuild transforms on every file change.
+	 */
 	config: Config;
+	/**
+	 * The path to the package.json file to write exports to.
+	 */
 	packageJsonPath: string;
 };
 
+/**
+ * Watch the input directory for file changes and regenerate package.json#exports
+ * automatically. Runs an initial generation, then blocks indefinitely until the
+ * process is terminated via SIGINT or SIGTERM.
+ */
 async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 	const inputDir = path.resolve(config.input?.trim() || "src");
 	let previousExportsJson = "";
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
+	/**
+	 * Re-run the exports pipeline and write to package.json.
+	 * Skips the write if the exports object is unchanged from the previous run.
+	 */
 	async function regenerate() {
 		try {
 			const exports = await generateExports(config);
@@ -39,6 +55,8 @@ async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 
 	await regenerate();
 
+	// Recursively watch the input directory for any filesystem events (add, delete, rename).
+	// Events are debounced to 200ms to batch rapid changes (e.g., renames emit multiple events).
 	const watcher = fs.watch(inputDir, { recursive: true }, () => {
 		if (debounceTimer) {
 			clearTimeout(debounceTimer);
@@ -50,6 +68,7 @@ async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 
 	console.log(`Watching ${inputDir} for changes...`);
 
+	// Close the watcher on process termination to release the file handle cleanly.
 	process.on("SIGINT", () => {
 		watcher.close();
 		process.exit(0);
@@ -60,7 +79,9 @@ async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 		process.exit(0);
 	});
 
-	await new Promise(() => {});
+	// Block forever so the process stays alive while fs.watch runs.
+	// Signal handlers above ensure clean shutdown on SIGINT/SIGTERM.
+	await new Promise<never>(() => {});
 }
 
 export {

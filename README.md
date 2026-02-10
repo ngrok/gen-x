@@ -52,6 +52,8 @@ This will scan your `src/` directory and generate package.json exports like:
 - ✅ **Replace patterns** - Rename exports with regex or string patterns
 - ✅ **Custom conditions** - For monorepo live types
 - ✅ **Config files** - gen-x.config.{ts,js,json} with type-safe `defineConfig`
+- ✅ **Watch mode** - Automatically regenerate exports on file changes
+- ✅ **Source-only mode** - Emit plain source file paths without import/types conditions
 - ✅ **Cross-platform** - Always generates POSIX paths for package.json
 - ✅ **Collision detection** - Errors on duplicate export keys
 
@@ -109,6 +111,8 @@ Options:
   -o, --output <output>             Output directory (default: "dist")
   -p, --package <package>           Path to package.json (default: "package.json")
   -r, --replace <pattern:=>replacement...>  Replace export keys
+  --sourceOnly                      Only emit plain source file paths in exports
+  -w, --watch                       Watch the input directory for changes and regenerate exports
   -h, --help                        display help for command
 ```
 
@@ -198,6 +202,16 @@ npx gen-x --include "**/*.ts" --include "**/*.tsx"
 # Exclude internal files
 npx gen-x --exclude "**/internal/**" --exclude "**/*.test.*"
 ```
+
+### Watch Mode
+
+Automatically regenerate exports when files are added, deleted, or renamed:
+
+```bash
+npx gen-x --watch
+```
+
+Config is loaded once at startup and reused on every regeneration, so there is no repeated overhead from esbuild transforms. Writes are skipped when exports haven't changed, avoiding unnecessary downstream rebuilds in tools like Turborepo.
 
 ## API Usage
 

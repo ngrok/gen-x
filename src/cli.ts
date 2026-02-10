@@ -88,33 +88,18 @@ async function cli() {
 		defaults,
 	);
 
-	const dryRun = Boolean(options.dryRun);
-	const watchMode = Boolean(options.watch);
 	const packageJsonPath = options.package?.trim() || "package.json";
 
-	const resolvedConfig = {
-		customCondition: config.customCondition,
-		exclude: config.exclude,
-		include: config.include,
-		input: config.input,
-		mode: config.mode,
-		output: config.output,
-		replace: config.replace,
-		sourceOnly: config.sourceOnly,
-	};
-
-	if (watchMode) {
-		await watch({ config: resolvedConfig, packageJsonPath });
+	// Watch mode: run an initial generation, then watch for file changes indefinitely.
+	// Config is loaded once above and reused on every regeneration to avoid repeated esbuild transforms.
+	if (options.watch) {
+		await watch({ config, packageJsonPath });
 		return;
 	}
 
-	const exports = await generateExports(resolvedConfig);
-
-	await updatePackageJson({
-		dryRun,
-		exports,
-		packageJsonPath,
-	});
+	// One-shot mode: generate exports and write (or preview with --dry-run).
+	const exports = await generateExports(config);
+	await updatePackageJson({ dryRun: Boolean(options.dryRun), exports, packageJsonPath });
 }
 
 void (await cli());
