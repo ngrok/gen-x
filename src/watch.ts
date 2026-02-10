@@ -16,13 +16,11 @@ type WatchOptions = {
 	 * The path to the package.json file to write exports to.
 	 */
 	packageJsonPath: string;
-};
-
-type WatchHandle = {
 	/**
-	 * Stop watching and clean up the file watcher.
+	 * An AbortSignal to stop watching and clean up the file watcher.
+	 * Similar to a React useEffect cleanup function.
 	 */
-	close: () => void;
+	signal?: AbortSignal;
 };
 
 /**
@@ -30,18 +28,29 @@ type WatchHandle = {
  * package.json#exports automatically. Runs an initial generation, then
  * watches for subsequent changes.
  *
- * Returns a handle that can be used to stop the watcher.
+ * Pass an AbortSignal to stop watching. The signal is forwarded to
+ * `fs.watch`, which closes the watcher when aborted.
  */
-async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<WatchHandle> {
+async function startWatch({ config, packageJsonPath, signal }: WatchOptions): Promise<void> {
 	const inputDir = path.resolve(config.input?.trim() || "src");
 	let previousExportsJson = "";
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+	let running = false;
+	let pending = false;
 
 	/**
 	 * Re-run the exports pipeline and write to package.json.
 	 * Skips the write if the exports object is unchanged from the previous run.
+	 * Guarded so only one regeneration runs at a time; if a change arrives
+	 * while one is in-flight, exactly one follow-up run is scheduled.
 	 */
 	async function regenerate() {
+		if (running) {
+			pending = true;
+			return;
+		}
+
+		running = true;
 		try {
 			const exports = await generateExports(config);
 			const exportsJson = JSON.stringify(exports);
@@ -59,6 +68,12 @@ async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<Wa
 			});
 		} catch (error) {
 			console.error("gen-x watch error:", error);
+		} finally {
+			running = false;
+			if (pending) {
+				pending = false;
+				void regenerate();
+			}
 		}
 	}
 
@@ -66,7 +81,8 @@ async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<Wa
 
 	// Recursively watch the input directory for any filesystem events (add, delete, rename).
 	// Events are debounced to 200ms to batch rapid changes (e.g., renames emit multiple events).
-	const watcher = fs.watch(inputDir, { recursive: true }, () => {
+	// The AbortSignal is forwarded to fs.watch, which closes the watcher when aborted.
+	fs.watch(inputDir, { recursive: true, signal }, () => {
 		if (debounceTimer) {
 			clearTimeout(debounceTimer);
 		}
@@ -76,15 +92,6 @@ async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<Wa
 	});
 
 	console.log(`Watching ${inputDir} for changes...`);
-
-	return {
-		close() {
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
-			}
-			watcher.close();
-		},
-	};
 }
 
 /**
@@ -92,19 +99,21 @@ async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<Wa
  * automatically. Runs an initial generation, then blocks indefinitely until the
  * process is terminated via SIGINT or SIGTERM.
  */
-async function watch(options: WatchOptions): Promise<void> {
-	const handle = await startWatch(options);
+async function watch(options: Omit<WatchOptions, "signal">): Promise<void> {
+	const abortController = new AbortController();
 
 	// Close the watcher on process termination to release the file handle cleanly.
 	process.on("SIGINT", () => {
-		handle.close();
+		abortController.abort();
 		process.exit(0);
 	});
 
 	process.on("SIGTERM", () => {
-		handle.close();
+		abortController.abort();
 		process.exit(0);
 	});
+
+	await startWatch({ ...options, signal: abortController.signal });
 
 	// Block forever so the process stays alive while fs.watch runs.
 	// Signal handlers above ensure clean shutdown on SIGINT/SIGTERM.
@@ -119,6 +128,5 @@ export {
 
 export type {
 	//,
-	WatchHandle,
 	WatchOptions,
 };

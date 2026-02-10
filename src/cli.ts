@@ -92,6 +92,12 @@ async function cli() {
 
 	// Watch mode: run an initial generation, then watch for file changes indefinitely.
 	// Config is loaded once above and reused on every regeneration to avoid repeated esbuild transforms.
+	if (options.watch && options.dryRun) {
+		console.error("Error: --dry-run is not supported in --watch mode. Remove --dry-run or disable --watch.");
+		process.exitCode = 1;
+		return;
+	}
+
 	if (options.watch) {
 		await watch({ config, packageJsonPath });
 		return;

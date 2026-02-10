@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import { startWatch, type WatchHandle } from "./watch.js";
+import { startWatch } from "./watch.js";
 
 function waitForFileChange(filePath: string, expected: (pkg: Record<string, unknown>) => boolean): Promise<void> {
 	return new Promise((resolve, reject) => {
@@ -33,12 +33,13 @@ describe("watch mode", () => {
 	let tmpDir: string;
 	let srcDir: string;
 	let packageJsonPath: string;
-	let handle: WatchHandle | null = null;
+	let ac: AbortController;
 
 	beforeEach(async () => {
 		tmpDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "gen-x-watch-"));
 		srcDir = path.join(tmpDir, "src");
 		packageJsonPath = path.join(tmpDir, "package.json");
+		ac = new AbortController();
 
 		await fsPromises.mkdir(srcDir, { recursive: true });
 		await fsPromises.writeFile(path.join(srcDir, "index.ts"), "export const x = 1;");
@@ -46,15 +47,15 @@ describe("watch mode", () => {
 	});
 
 	afterEach(async () => {
-		handle?.close();
-		handle = null;
+		ac.abort();
 		await fsPromises.rm(tmpDir, { recursive: true, force: true });
 	});
 
 	test("initial run generates exports", async () => {
-		handle = await startWatch({
+		await startWatch({
 			config: { input: srcDir },
 			packageJsonPath,
+			signal: ac.signal,
 		});
 
 		const content = await fsPromises.readFile(packageJsonPath, "utf8");
@@ -70,9 +71,10 @@ describe("watch mode", () => {
 	});
 
 	test("regenerates exports when a file is added", async () => {
-		handle = await startWatch({
+		await startWatch({
 			config: { input: srcDir },
 			packageJsonPath,
+			signal: ac.signal,
 		});
 
 		const waiting = waitForFileChange(packageJsonPath, (pkg) => {
@@ -103,9 +105,10 @@ describe("watch mode", () => {
 	test("regenerates exports when a file is deleted", async () => {
 		await fsPromises.writeFile(path.join(srcDir, "utils.ts"), "export const y = 2;");
 
-		handle = await startWatch({
+		await startWatch({
 			config: { input: srcDir },
 			packageJsonPath,
+			signal: ac.signal,
 		});
 
 		// Verify utils is in initial exports
@@ -135,9 +138,10 @@ describe("watch mode", () => {
 	});
 
 	test("skips write when exports are unchanged", async () => {
-		handle = await startWatch({
+		await startWatch({
 			config: { input: srcDir },
 			packageJsonPath,
+			signal: ac.signal,
 		});
 
 		const { mtimeMs: initialMtime } = await fsPromises.stat(packageJsonPath);
