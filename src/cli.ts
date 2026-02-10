@@ -40,6 +40,11 @@ const program = new Command()
 	.option("-o, --output <output>", "The output directory for the package export files", "dist")
 	.option("-p, --package <package>", "The path to the package.json file to read from and write to.", "package.json")
 	.option(
+		"--sourceOnly",
+		"Only emit plain source file paths in exports (no import/types/custom condition pointing to dist/).",
+		false,
+	)
+	.option(
 		`-r, --replace <<pattern${replaceSentinel}replacement>...>`,
 		"Replace export keys, a way to rename exports. Like String.prototype.replace, the pattern is a string or regex, and the replacement is a string. If you want to use a regex pattern, you must use the format /pattern/.",
 		parseReplaceOption,
@@ -63,6 +68,7 @@ async function cli() {
 		mode: "passthrough" as const,
 		replace: [] as ReplaceTuples,
 		customCondition: null as string | null,
+		sourceOnly: false,
 	};
 
 	const config = mergeConfigs(
@@ -74,6 +80,7 @@ async function cli() {
 			mode: options.mode,
 			replace: options.replace,
 			customCondition: options.customCondition?.trim(),
+			sourceOnly: options.sourceOnly,
 		},
 		fileConfig,
 		defaults,
@@ -90,6 +97,7 @@ async function cli() {
 		mode: config.mode,
 		output: config.output,
 		replace: config.replace,
+		sourceOnly: config.sourceOnly,
 	});
 
 	await updatePackageJson({

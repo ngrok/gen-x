@@ -1,0 +1,11 @@
+{
+  "name": "@acme/source-only-pkg",
+  "version": "1.0.0",
+  "description": "Package with source-only exports (no import/types)",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  }
+}
