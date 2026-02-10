@@ -87,7 +87,7 @@ function buildPackageJsonExports(exportItems: Array<ExportItem>, options?: Optio
 				};
 			}
 
-			acc[name] = entry as ExportEntry;
+			acc[name] = entry;
 
 			return acc;
 		},
