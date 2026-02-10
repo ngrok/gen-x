@@ -18,12 +18,21 @@ type WatchOptions = {
 	packageJsonPath: string;
 };
 
+type WatchHandle = {
+	/**
+	 * Stop watching and clean up the file watcher.
+	 */
+	close: () => void;
+};
+
 /**
- * Watch the input directory for file changes and regenerate package.json#exports
- * automatically. Runs an initial generation, then blocks indefinitely until the
- * process is terminated via SIGINT or SIGTERM.
+ * Start watching the input directory for file changes and regenerate
+ * package.json#exports automatically. Runs an initial generation, then
+ * watches for subsequent changes.
+ *
+ * Returns a handle that can be used to stop the watcher.
  */
-async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
+async function startWatch({ config, packageJsonPath }: WatchOptions): Promise<WatchHandle> {
 	const inputDir = path.resolve(config.input?.trim() || "src");
 	let previousExportsJson = "";
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -68,14 +77,32 @@ async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 
 	console.log(`Watching ${inputDir} for changes...`);
 
+	return {
+		close() {
+			if (debounceTimer) {
+				clearTimeout(debounceTimer);
+			}
+			watcher.close();
+		},
+	};
+}
+
+/**
+ * Watch the input directory for file changes and regenerate package.json#exports
+ * automatically. Runs an initial generation, then blocks indefinitely until the
+ * process is terminated via SIGINT or SIGTERM.
+ */
+async function watch(options: WatchOptions): Promise<void> {
+	const handle = await startWatch(options);
+
 	// Close the watcher on process termination to release the file handle cleanly.
 	process.on("SIGINT", () => {
-		watcher.close();
+		handle.close();
 		process.exit(0);
 	});
 
 	process.on("SIGTERM", () => {
-		watcher.close();
+		handle.close();
 		process.exit(0);
 	});
 
@@ -86,5 +113,12 @@ async function watch({ config, packageJsonPath }: WatchOptions): Promise<void> {
 
 export {
 	//,
+	startWatch,
 	watch,
+};
+
+export type {
+	//,
+	WatchHandle,
+	WatchOptions,
 };
