@@ -8,6 +8,7 @@ import { parseGlobOption } from "./parse-glob-option.js";
 import { parseReplaceOption, replaceSentinel, type ReplaceTuples } from "./replace.js";
 import { transformMode, transformModes } from "./transforms/mode.js";
 import { updatePackageJson } from "./update-package-json.js";
+import { watch } from "./watch.js";
 
 const packageName = pkg.name;
 const packageVersion = pkg.version;
@@ -18,6 +19,7 @@ const program = new Command()
 	.name(packageName)
 	.version(packageVersion)
 	.option("--dry-run, --dryRun", "Preview changes to standard out for debugging.", false)
+	.option("-w, --watch", "Watch the input directory for changes and regenerate exports.", false)
 	.option("--exclude <exclude...>", "A list of globs to exclude file paths from.", [
 		"**/*.d.ts",
 		"**/*.test.*",
@@ -86,25 +88,24 @@ async function cli() {
 		defaults,
 	);
 
-	const dryRun = Boolean(options.dryRun);
 	const packageJsonPath = options.package?.trim() || "package.json";
 
-	const exports = await generateExports({
-		customCondition: config.customCondition,
-		exclude: config.exclude,
-		include: config.include,
-		input: config.input,
-		mode: config.mode,
-		output: config.output,
-		replace: config.replace,
-		sourceOnly: config.sourceOnly,
-	});
+	// Watch mode: run an initial generation, then watch for file changes indefinitely.
+	// Config is loaded once above and reused on every regeneration to avoid repeated esbuild transforms.
+	if (options.watch && options.dryRun) {
+		console.error("Error: --dry-run is not supported in --watch mode. Remove --dry-run or disable --watch.");
+		process.exitCode = 1;
+		return;
+	}
 
-	await updatePackageJson({
-		dryRun,
-		exports,
-		packageJsonPath,
-	});
+	if (options.watch) {
+		await watch({ config, packageJsonPath });
+		return;
+	}
+
+	// One-shot mode: generate exports and write (or preview with --dry-run).
+	const exports = await generateExports(config);
+	await updatePackageJson({ dryRun: Boolean(options.dryRun), exports, packageJsonPath });
 }
 
 void (await cli());
