@@ -1,8 +1,7 @@
 import path from "node:path";
 
-import type { Config } from "./config.js";
-
 import { buildPackageJsonExports, type ExportsField } from "./build-package-json-exports.js";
+import type { Config } from "./config.js";
 import { gatherFilepaths } from "./gather-filepaths.js";
 import { makeExportItems } from "./make-export-items.js";
 

@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 import type { Config } from "./config.js";
-
 import { generateExports } from "./index.js";
 import { updatePackageJson } from "./update-package-json.js";
 

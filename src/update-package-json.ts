@@ -43,14 +43,9 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 		throw error;
 	}
 
-	// delete the exports field from the package.json object so it is always at the end
-	delete originalPackageJson.exports;
-
-	// set the exports field to the new exports object
-	const updatedPackageJson = {
-		...originalPackageJson,
-		exports,
-	};
+	// set the exports field; if it already exists the spread preserves its position,
+	// otherwise it is appended at the end
+	const updatedPackageJson = { ...originalPackageJson, exports };
 
 	// don't write to disk if dry run is set, just preview the changes in stdout
 	if (dryRun) {

@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, test } from "vitest";
 
-import type { ReplaceTuples } from "./replace.js";
-import type { TransformMode } from "./transforms/mode.js";
+import { describe, expect, test } from "vitest";
 
 import { loadConfig, mergeConfigs } from "./config.js";
 import { generateExports } from "./index.js";
+import type { ReplaceTuples } from "./replace.js";
+import type { TransformMode } from "./transforms/mode.js";
 
 describe("CLI e2e tests with fixtures", () => {
 	const fixturesDir = path.join(process.cwd(), "fixtures");
@@ -170,8 +170,8 @@ describe("CLI e2e tests with fixtures", () => {
 				if (typeof value === "string") {
 					expect(value).not.toContain("\\");
 				} else if (typeof value === "object") {
-					for (const path of Object.values(value as Record<string, string>)) {
-						expect(path).not.toContain("\\");
+					for (const exportKey of Object.values(value as Record<string, string>)) {
+						expect(exportKey).not.toContain("\\");
 					}
 				}
 			}
@@ -280,7 +280,6 @@ describe("CLI e2e tests with fixtures", () => {
 		const fixturePath = path.join(fixturesDir, "typescript-config");
 
 		// Verify config loads correctly
-		const { loadConfig } = await import("./config.js");
 		const config = await loadConfig(fixturePath);
 		expect(config?.mode).toBe("camelCase");
 		expect(config?.customCondition).toBe("@acme/typescript-config/source");
