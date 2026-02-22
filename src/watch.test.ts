@@ -2,6 +2,7 @@ import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
 import { startWatch } from "./watch.js";
@@ -116,8 +117,8 @@ describe("watch mode", () => {
 		let pkg = JSON.parse(content);
 		expect(pkg.exports).toHaveProperty("./utils");
 
-		const waiting = waitForFileChange(packageJsonPath, (pkg) => {
-			const exports = pkg.exports as Record<string, unknown> | undefined;
+		const waiting = waitForFileChange(packageJsonPath, (updatedPkg) => {
+			const exports = updatedPkg.exports as Record<string, unknown> | undefined;
 			return exports != null && !("./utils" in exports);
 		});
 

@@ -1,7 +1,6 @@
-import type { TransformMode } from "./mode.js";
-
 import { camelCasePath } from "./camel-case.js";
 import { kebabCasePath } from "./kebab-case.js";
+import type { TransformMode } from "./mode.js";
 import { pascalCasePath } from "./pascal-case.js";
 import { snakeCasePath } from "./snake-case.js";
 

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
 import { defineConfig, loadConfig, mergeConfigs } from "./config.js";
