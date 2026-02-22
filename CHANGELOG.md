@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.4.1
+
+### Patch Changes
+
+- [#27](https://github.com/ngrok-oss/gen-x/pull/27) [`ad8b4b1`](https://github.com/ngrok-oss/gen-x/commit/ad8b4b1a27530490b6c4065ca023e789815aacf5) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Preserve `exports` key position when updating `package.json`. Previously, gen-x always deleted and re-appended the `exports` field, moving it to the end of the file on every run. Now, if `exports` already exists, it is updated in-place so its position relative to other keys is unchanged.
+
 ## 0.4.0
 
 ### Minor Changes
