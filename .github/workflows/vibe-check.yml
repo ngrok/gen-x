@@ -42,11 +42,14 @@ jobs:
         run: |
           pnpm install
 
-      - name: Fmt, Lint, and Type Check 🧹
-        run: | # Run the lint and type check
-          pnpm run typecheck
-          pnpm run lint
-          pnpm run fmt:check
+      - name: Type Check 🔎
+        run: pnpm run typecheck
+
+      - name: Lint 🔍
+        run: pnpm run lint
+
+      - name: Format Check 🎨
+        run: pnpm run fmt:check
 
       - name: Test 🧪
         run: | # Run the tests
