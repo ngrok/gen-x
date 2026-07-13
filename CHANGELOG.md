@@ -1,5 +1,13 @@
 # @ngrok/gen-x
 
+## 0.4.2
+
+### Patch Changes
+
+- [#29](https://github.com/ngrok-oss/gen-x/pull/29) [`0b1bb32`](https://github.com/ngrok-oss/gen-x/commit/0b1bb32451e65aecffa7aa60da7ff79456c83312) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Write package.json atomically (write to a temp file, then rename) instead of truncating it in place. Previously a concurrent reader — e.g. a bundler resolving the package mid-build, or a build tool capturing task outputs — could observe an empty or partially-written package.json. The write resolves symlinks so a symlinked package.json is still written through to its target, preserves the original file's permissions, and cleans up its temp file on failure.
+
+- [#31](https://github.com/ngrok-oss/gen-x/pull/31) [`7408e84`](https://github.com/ngrok-oss/gen-x/commit/7408e8494f6ac982d46c40ef08008505dde18ba8) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Update runtime dependencies to their latest versions: commander 15, @commander-js/extra-typings 15, esbuild 0.28.1, and tinyglobby 0.2.17. Also migrates the toolchain to TypeScript 7, oxlint 1.73, oxfmt 0.58, vitest 4.1, and pnpm 11, and switches local tooling management from direnv/fnm to mise.
+
 ## 0.4.1
 
 ### Patch Changes
