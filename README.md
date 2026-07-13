@@ -229,34 +229,18 @@ console.log(exports);
 
 ## Development
 
-Prerequisites required:
+We use [mise](https://mise.jdx.dev/) to manage the toolchain (Node.js and pnpm). Versions are pinned in `.nvmrc` (Node) and `package.json#packageManager` (pnpm), and locked in the committed `mise.lock`.
 
-- [Node 20](https://nodejs.org/en/download)
-- [pnpm 9](https://pnpm.io/installation#using-npm)
-- [nvm](https://github.com/nvm-sh/nvm)
+First, install `mise` (or run `./scripts/install-mise` to install the pinned version):
 
-We use [direnv](https://direnv.net/) to assist you with setting up all of the required tooling.
+| OS    | command                     |
+| ----- | --------------------------- |
+| macOS | brew install mise           |
+| other | curl https://mise.run \| sh |
 
-<details>
-  <summary>Prefer to install and manage the tooling yourself?</summary>
+For all other install methods, see the [mise installation guide](https://mise.jdx.dev/getting-started.html).
 
-1. Install [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) or your node version manager of choice.
-2. Ensure that `node 20` is installed. With `nvm`, run `nvm install`.
-3. Enable `pnpm` with `corepack`: `corepack enable pnpm`
-4. Install `pnpm` with `corepack`: `corepack install`
-5. Install project dependencies with `pnpm`: `pnpm install`
-</details>
-
-First, install `direnv`:
-
-| OS     | command                 |
-| ------ | ----------------------- |
-| macOS  | brew install direnv     |
-| ubuntu | sudo apt install direnv |
-
-For all other OSes, see the [direnv installation guide](https://direnv.net/docs/installation.html).
-
-Don't forget to [set up direnv integration with your shell](https://direnv.net/docs/hook.html).
+Don't forget to [activate mise in your shell](https://mise.jdx.dev/getting-started.html#activate-mise).
 
 Next, clone the repo and move into the directory:
 
@@ -268,8 +252,24 @@ cd gen-x
 Next, run:
 
 ```sh
-direnv allow
+mise trust
+mise install
+mise run setup
 ```
 
-This will install `nvm` (if not already installed) as well as set the correct `node` and `pnpm` versions for you.
-It will also run `pnpm install` at the end to install all `node_modules`.
+This installs the pinned `node` and `pnpm` versions and then runs `pnpm install --frozen-lockfile` to install all `node_modules`.
+
+Useful mise tasks:
+
+- `mise run doctor` — verify the active tools match the committed pins
+- `mise run relock` — refresh `mise.lock` after bumping `.nvmrc` or `package.json#packageManager` (then run `mise install` and commit both)
+
+<details>
+  <summary>Prefer to install and manage the tooling yourself?</summary>
+
+1. Install the `node` version pinned in `.nvmrc` with your node version manager of choice.
+2. Enable `pnpm` with `corepack`: `corepack enable pnpm`
+3. Install `pnpm` with `corepack`: `corepack install`
+4. Install project dependencies with `pnpm`: `pnpm install`
+
+</details>

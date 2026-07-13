@@ -19,6 +19,40 @@ env:
   VERCEL_TELEMETRY_DISABLED: 1
 
 jobs:
+  mise-lock-check:
+    name: Mise Lockfile
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Cache mise binary 🗃️
+        uses: actions/cache@v6
+        with:
+          path: ~/.local/bin/mise
+          key: mise-${{ runner.os }}-${{ hashFiles('scripts/install-mise') }}
+
+      - name: Install mise 🔧
+        run: |
+          # Put the cached binary on PATH first so install-mise's version check finds it
+          # and skips re-downloading the pinned release on a cache hit.
+          export PATH="${HOME}/.local/bin:${PATH}"
+          ./scripts/install-mise
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Verify mise.lock is in sync 🔒
+        run: |
+          mise trust ./mise.toml
+          mise lock
+          if ! git diff --exit-code mise.lock; then
+            echo "::error::mise.lock is out of sync with .nvmrc / package.json#packageManager."
+            echo "::error::Run 'mise run relock' locally and commit the result."
+            exit 1
+          fi
+
   vibe-check:
     runs-on: ubuntu-latest
     steps:
@@ -27,11 +61,35 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install pnpm 📦
-        uses: pnpm/action-setup@v4
-        # use version from package.json#packageManager field
+      - name: Cache mise binary 🗃️
+        uses: actions/cache@v6
         with:
-          run_install: false
+          path: ~/.local/bin/mise
+          key: mise-${{ runner.os }}-${{ hashFiles('scripts/install-mise') }}
+
+      - name: Install mise 🔧
+        run: |
+          # Put the cached binary on PATH first so install-mise's version check finds it
+          # and skips re-downloading the pinned release on a cache hit.
+          export PATH="${HOME}/.local/bin:${PATH}"
+          ./scripts/install-mise
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Cache mise toolchain 🗃️
+        uses: actions/cache@v6
+        with:
+          path: ~/.local/share/mise/installs
+          key: mise-tools-${{ runner.os }}-${{ hashFiles('mise.lock') }}
+
+      # Installs the pinned node + pnpm from mise.lock. pnpm comes from mise's
+      # npm backend — a direct registry install, not `pnpm self-update`, which
+      # crashes for pnpm >= 11.12 under pnpm/action-setup (pnpm/action-setup#276).
+      # Shims expose the tools to all subsequent steps.
+      - name: Install Toolchain ⚙️
+        run: |
+          mise trust ./mise.toml
+          mise install
+          echo "${HOME}/.local/share/mise/shims" >> "${GITHUB_PATH}"
 
       - uses: actions/setup-node@v6
         with:
