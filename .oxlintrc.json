@@ -10,8 +10,6 @@
 		"no-useless-switch-case": "off",
 		"react/react-in-jsx-scope": "off",
 		"jsx-a11y/anchor-has-content": "off",
-		"jsx-a11y/no-svg-without-title": "warn",
-		"jsx-a11y/no-blank-target": "off",
 		"react/no-danger": "off",
 		"no-restricted-globals": [
 			"error",

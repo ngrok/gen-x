@@ -5,5 +5,5 @@
 # see: https://pnpm.io/settings#minimumreleaseage
 minimumReleaseAge: 720
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
