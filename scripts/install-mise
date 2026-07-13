@@ -191,5 +191,26 @@ ensure_pinned_mise() {
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  # The PATH exports in ensure_pinned_mise only affect this script's process.
+  # Capture the caller's PATH so we can warn when the invoking shell would not
+  # resolve the pinned mise (not on PATH yet, or shadowed by another install,
+  # e.g. Homebrew's). CI avoids this by adding ~/.local/bin to GITHUB_PATH.
+  CALLER_PATH="${PATH}"
   ensure_pinned_mise
+
+  caller_mise="$(PATH="${CALLER_PATH}" command -v mise || true)"
+  caller_mise_version=""
+  if [ -n "${caller_mise}" ]; then
+    caller_mise_version="$(mise_version "${caller_mise}")"
+  fi
+  if [ "${caller_mise_version}" != "${MISE_EXPECTED_VERSION}" ]; then
+    if [ -n "${caller_mise}" ]; then
+      echo "gen-x: mise ${MISE_EXPECTED_VERSION} is installed at ${HOME}/.local/bin/mise, but your shell resolves ${caller_mise} (${caller_mise_version:-unknown version})." >&2
+    else
+      echo "gen-x: mise ${MISE_EXPECTED_VERSION} is installed at ${HOME}/.local/bin/mise, but ${HOME}/.local/bin is not on your PATH." >&2
+    fi
+    echo "       Put ${HOME}/.local/bin first on your PATH and activate mise, e.g. for zsh:" >&2
+    echo "         echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc" >&2
+    echo "         echo 'eval \"\$(\$HOME/.local/bin/mise activate zsh)\"' >> ~/.zshrc" >&2
+  fi
 fi

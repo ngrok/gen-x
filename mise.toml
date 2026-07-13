@@ -39,8 +39,10 @@ run = '''
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Compare active Node to .nvmrc (strip leading "v" so formats match).
+# Compare active Node to .nvmrc (strip leading "v" from both sides so formats
+# match; a v-prefixed .nvmrc is valid for nvm, mise, and setup-node).
 expected_node=$(tr -d '[:space:]' < .nvmrc)
+expected_node="${expected_node#v}"
 actual_node=$(node --version)
 actual_node="${actual_node#v}"
 if [ "$actual_node" != "$expected_node" ]; then
