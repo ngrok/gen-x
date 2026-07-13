@@ -1,4 +1,6 @@
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
+import path from "node:path";
 
 import type { ExportsField } from "./build-package-json-exports.js";
 
@@ -25,11 +27,14 @@ type Args = {
  */
 async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: Args) {
 	let originalPackageJsonFile: string;
+	let originalStats: Awaited<ReturnType<typeof fs.stat>>;
 	let originalPackageJson: Record<string, unknown>;
 
-	// read the package.json file
+	// read the package.json file (and its stats, so the atomic write below can
+	// preserve the original file's permissions)
 	try {
 		originalPackageJsonFile = await fs.readFile(packageJsonPath, "utf8");
+		originalStats = await fs.stat(packageJsonPath);
 	} catch (error) {
 		console.error(`Failed to read package.json at ${packageJsonPath}`);
 		throw error;
@@ -68,10 +73,42 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 	}
 	data += eofNewline;
 
-	// write the updated package.json file
+	// write the updated package.json file atomically: write to a unique temp
+	// file in the same directory, then rename it over package.json. A plain
+	// writeFile truncates the file before writing, so a concurrent reader
+	// (e.g. a bundler resolving the package mid-build) can observe an empty
+	// or partial package.json. rename is atomic on the same filesystem, so
+	// readers only ever see the old contents or the new contents.
+	let tempPath: string | undefined;
 	try {
-		await fs.writeFile(packageJsonPath, data, "utf8");
+		// resolve symlinks so the write goes through to the real file (a rename
+		// onto the symlink's own path would replace the link instead) and so the
+		// temp file lands on the same filesystem, keeping the rename atomic
+		const realPath = await fs.realpath(packageJsonPath);
+		tempPath = path.join(
+			path.dirname(realPath),
+			`.${path.basename(realPath)}.${crypto.randomBytes(8).toString("hex")}.tmp`,
+		);
+
+		const tempFile = await fs.open(tempPath, "w");
+		try {
+			await tempFile.writeFile(data, "utf8");
+			// preserve the original file's permissions; a fresh temp file would
+			// otherwise reset them to the process default (0o666 & ~umask)
+			await tempFile.chmod(originalStats.mode);
+			// flush to disk before the rename so a crash can't persist the rename
+			// ahead of the file data, which would leave an empty package.json
+			await tempFile.sync();
+		} finally {
+			await tempFile.close();
+		}
+		await fs.rename(tempPath, realPath);
 	} catch (error) {
+		// best-effort cleanup of the temp file; ignore cleanup failures so the
+		// original write error is the one that surfaces
+		if (tempPath) {
+			await fs.rm(tempPath, { force: true }).catch(() => {});
+		}
 		console.error(`Failed to write package.json at ${packageJsonPath}`);
 		throw error;
 	}
