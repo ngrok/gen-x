@@ -10,6 +10,9 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  DO_NOT_TRACK: 1
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -17,11 +20,38 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install pnpm 📦
-        uses: pnpm/action-setup@v6
+      - name: Cache mise binary 🗃️
+        uses: actions/cache@v6
         with:
-          run_install: false
+          path: ~/.local/bin/mise
+          key: mise-${{ runner.os }}-${{ hashFiles('scripts/install-mise') }}
 
+      - name: Install mise 🔧
+        run: |
+          # Put the cached binary on PATH first so install-mise's version check finds it
+          # and skips re-downloading the pinned release on a cache hit.
+          export PATH="${HOME}/.local/bin:${PATH}"
+          ./scripts/install-mise
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Cache mise toolchain 🗃️
+        uses: actions/cache@v6
+        with:
+          path: ~/.local/share/mise/installs
+          key: mise-tools-${{ runner.os }}-${{ hashFiles('mise.lock') }}
+
+      # Installs the pinned node + pnpm from mise.lock. pnpm comes from mise's
+      # npm backend — a direct registry install, not `pnpm self-update`, which
+      # crashes for pnpm >= 11.12 under pnpm/action-setup (pnpm/action-setup#276).
+      # Shims expose the tools to all subsequent steps.
+      - name: Install Toolchain ⚙️
+        run: |
+          mise trust ./mise.toml
+          mise install
+          echo "${HOME}/.local/share/mise/shims" >> "${GITHUB_PATH}"
+
+      # setup-node still configures the npm registry and NODE_AUTH_TOKEN
+      # wiring (.npmrc) that changeset publish relies on.
       - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
