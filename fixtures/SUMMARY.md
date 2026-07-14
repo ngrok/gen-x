@@ -72,7 +72,6 @@ npx tsx ../../src/cli.ts
 
 - Custom condition: `@acme/monorepo-pkg/source`
 - Allows consuming packages in the same monorepo to use source .ts files
-- Config file: `gen-x.config.json`
 - See: https://colinhacks.com/essays/live-types-typescript-monorepo
 
 **Command:**
@@ -90,7 +89,6 @@ npx tsx ../../src/cli.ts --customCondition "@acme/monorepo-pkg/source"
 - Replace patterns to remove `_pb` suffix
 - `user_pb.ts` → export key `./proto/user`
 - Common in protobuf/gRPC codegen scenarios
-- Config file: `gen-x.config.json`
 
 **Command:**
 
@@ -124,7 +122,6 @@ Each fixture has:
 1. `package.json` - Original state before gen-x
 2. `package.json.expected` - Expected state after gen-x
 3. `src/` - Source files to generate exports from
-4. Optional: `gen-x.config.json` - Configuration file
 
 To test a fixture:
 

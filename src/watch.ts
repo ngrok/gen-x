@@ -32,6 +32,15 @@ type WatchOptions = {
  */
 async function startWatch({ config, packageJsonPath, signal }: WatchOptions): Promise<void> {
 	const inputDir = path.resolve(config.input?.trim() || "src");
+
+	// Validate the input directory BEFORE the initial regenerate: otherwise the
+	// destructive package.json write happens first and fs.watch below then
+	// crashes with a raw ENOENT after the exports map is already wiped.
+	const inputStats = fs.statSync(inputDir, { throwIfNoEntry: false });
+	if (!inputStats?.isDirectory()) {
+		throw new Error(`Input directory "${inputDir}" does not exist; cannot watch a nonexistent directory.`);
+	}
+
 	let previousExportsJson = "";
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 	let running = false;
@@ -51,7 +60,7 @@ async function startWatch({ config, packageJsonPath, signal }: WatchOptions): Pr
 
 		running = true;
 		try {
-			const exports = await generateExports(config);
+			const exports = await generateExports(config, packageJsonPath);
 			const exportsJson = JSON.stringify(exports);
 
 			if (exportsJson === previousExportsJson) {

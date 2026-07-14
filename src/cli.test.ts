@@ -3,7 +3,6 @@ import path from "node:path";
 
 import { describe, expect, test } from "vitest";
 
-import { loadConfig, mergeConfigs } from "./config.js";
 import { generateExports } from "./index.js";
 import type { ReplaceTuples } from "./replace.js";
 import type { TransformMode } from "./transforms/mode.js";
@@ -31,27 +30,11 @@ describe("CLI e2e tests with fixtures", () => {
 		process.chdir(fixturePath);
 
 		try {
-			// Load config file if present
-			const fileConfig = await loadConfig(fixturePath);
-
-			// Merge: CLI > config file > defaults
-			const defaults = {
-				input: "src",
-				output: "dist",
-			};
-
-			const config = mergeConfigs(cliOptions, fileConfig, defaults);
-
 			// Generate exports directly (no process spawning!)
 			const exports = await generateExports({
-				input: config.input,
-				output: config.output,
-				mode: config.mode,
-				customCondition: config.customCondition,
-				replace: config.replace,
-				include: config.include,
-				exclude: config.exclude,
-				sourceOnly: config.sourceOnly,
+				input: "src",
+				output: "dist",
+				...cliOptions,
 			});
 
 			// Build the result package.json (simulating what update-package-json does)
@@ -274,29 +257,6 @@ describe("CLI e2e tests with fixtures", () => {
 		expect(exportKeys).toContain("./legacy"); // legacy.js
 		expect(exportKeys).toContain("./modern"); // modern.mjs
 		expect(exportKeys).toContain("./commonjs"); // commonjs.cjs
-	});
-
-	test("loads config from gen-x.config.ts with defineConfig", async () => {
-		const fixturePath = path.join(fixturesDir, "typescript-config");
-
-		// Verify config loads correctly
-		const config = await loadConfig(fixturePath);
-		expect(config?.mode).toBe("camelCase");
-		expect(config?.customCondition).toBe("@acme/typescript-config/source");
-
-		// Now test generation
-		const { pkg } = await runGenerateExports("typescript-config");
-		const expected = await readExpectedPackageJson(fixturePath);
-
-		expect(pkg.exports).toEqual(expected.exports);
-
-		// Config file should apply camelCase mode
-		expect(pkg.exports).toHaveProperty("./helloWorld");
-		expect(pkg.exports).toHaveProperty("./fooBarBaz");
-
-		// Custom condition from config file
-		const helloExport = pkg.exports["./helloWorld"] as Record<string, string>;
-		expect(helloExport["@acme/typescript-config/source"]).toBe("./src/hello-world.ts");
 	});
 
 	test("CSS files keep extension in export key", async () => {

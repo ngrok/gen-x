@@ -8,15 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@commander-js/extra-typings':
-        specifier: 15.0.0
-        version: 15.0.0(commander@15.0.0)
       commander:
         specifier: 15.0.0
         version: 15.0.0
-      esbuild:
-        specifier: 0.28.1
-        version: 0.28.1
       tinyglobby:
         specifier: 0.2.17
         version: 0.2.17
@@ -115,11 +109,6 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
-
-  '@commander-js/extra-typings@15.0.0':
-    resolution: {integrity: sha512-yeJlba62xqmkgELUsn7356MEnzLLu/fw2x4lofFqGnXh6YysRdEs2BaLeLtg1+KU0AXvMeqQvTTp+3hBEBK+EA==}
-    peerDependencies:
-      commander: ~15.0.0
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -1621,10 +1610,6 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.2.0
       prettier: 2.8.8
-
-  '@commander-js/extra-typings@15.0.0(commander@15.0.0)':
-    dependencies:
-      commander: 15.0.0
 
   '@emnapi/core@1.11.1':
     dependencies:

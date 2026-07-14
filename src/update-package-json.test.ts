@@ -197,4 +197,68 @@ describe("updatePackageJson", () => {
 		const content = await fsPromises.readFile(packageJsonPath, "utf8");
 		expect(JSON.parse(content)).toEqual(original);
 	});
+
+	test("skips the write entirely when the output is byte-identical", async () => {
+		await fsPromises.writeFile(packageJsonPath, JSON.stringify({ name: "my-pkg" }, null, 2) + "\n");
+		await updatePackageJson({ packageJsonPath, exports: { ".": "./index.js" } });
+		const statsAfterFirstWrite = await fsPromises.stat(packageJsonPath);
+
+		// wait long enough for a rewrite to produce a distinct mtime
+		await new Promise((resolve) => setTimeout(resolve, 20));
+		await updatePackageJson({ packageJsonPath, exports: { ".": "./index.js" } });
+
+		// the second, no-op update must not touch the file (mtime unchanged)
+		const statsAfterNoop = await fsPromises.stat(packageJsonPath);
+		expect(statsAfterNoop.mtimeMs).toBe(statsAfterFirstWrite.mtimeMs);
+	});
+
+	test("preserves Windows CRLF trailing newline", async () => {
+		await fsPromises.writeFile(packageJsonPath, '{\r\n  "name": "my-pkg"\r\n}\r\n');
+
+		await updatePackageJson({ packageJsonPath, exports: { ".": "./index.js" } });
+
+		const content = await fsPromises.readFile(packageJsonPath, "utf8");
+		expect(content.endsWith("\r\n")).toBe(true);
+	});
+
+	test("flushes (fsyncs) the temp file to disk before the rename", async () => {
+		const original = { name: "my-pkg" };
+		await fsPromises.writeFile(packageJsonPath, JSON.stringify(original, null, 2) + "\n");
+
+		// grab the FileHandle prototype so the spy sees the temp file's handle
+		const probeHandle = await fsPromises.open(packageJsonPath, "r");
+		const fileHandleProto = Object.getPrototypeOf(probeHandle) as { sync: () => Promise<void> };
+		await probeHandle.close();
+
+		const calls: string[] = [];
+		const origSync = fileHandleProto.sync;
+		const origRename = fsPromises.rename;
+		vi.spyOn(fileHandleProto, "sync").mockImplementation(async function (this: unknown) {
+			calls.push("sync");
+			return origSync.call(this as never);
+		});
+		vi.spyOn(fsPromises, "rename").mockImplementation(async (...args) => {
+			calls.push("rename");
+			return origRename.apply(fsPromises, args);
+		});
+		try {
+			await updatePackageJson({ packageJsonPath, exports: { ".": "./index.js" } });
+		} finally {
+			vi.restoreAllMocks();
+		}
+
+		// the fsync must happen, and must happen before the rename, so a crash
+		// cannot persist the rename ahead of the file data
+		expect(calls).toEqual(["sync", "rename"]);
+	});
+
+	test("rewrites with 2-space indentation regardless of input indentation (documented behavior)", async () => {
+		await fsPromises.writeFile(packageJsonPath, '{\n\t"name": "my-pkg"\n}\n');
+
+		await updatePackageJson({ packageJsonPath, exports: { ".": "./index.js" } });
+
+		const content = await fsPromises.readFile(packageJsonPath, "utf8");
+		expect(content).toContain('\n  "name"');
+		expect(content).not.toContain("\t");
+	});
 });
