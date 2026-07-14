@@ -1,6 +1,6 @@
 {
   "name": "@ngrok/gen-x",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Generate package.json#exports from src",
   "author": "ngrok",
   "repository": {

@@ -1,5 +1,23 @@
 # @ngrok/gen-x
 
+## 0.5.0
+
+### Minor Changes
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Declare `engines.node >= 24`: gen-x supports the current Node LTS line only. (The CLI's compile-cache bootstrap relies on `module.enableCompileCache`, available since Node 22.8.)
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Fail loudly instead of silently wiping exports: a missing or non-directory input now exits with an error instead of replacing the entire exports map with just `./package.json` (watch mode validates before its first destructive write too), and a run whose include/exclude globs match zero files prints a warning before writing.
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Performance: skip the package.json write entirely when the generated output is byte-identical (saves the ~5ms atomic-write/fsync path and keeps package.json's mtime stable so build-system caches aren't invalidated by no-op runs); sort gathered file paths with the default UTF-16 code-unit comparator instead of `localeCompare` (avoids ~6ms of ICU collator init per invocation and makes the emitted exports order deterministic across machines/locales — key order in generated exports may change once on repos with mixed-case filenames); compute export paths with a prefix slice instead of per-file `path.relative` (~10% faster end-to-end at 2000 files); enable Node's on-disk V8 compile cache in the CLI bootstrap (~2-2.5ms per warm invocation, disable with `NODE_DISABLE_COMPILE_CACHE=1`); remove the unused `@commander-js/extra-typings` dependency.
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Remove config-file support and the esbuild dependency. gen-x no longer loads `gen-x.config.{ts,js,mjs,cjs,json}` or `package.json#genx`, and no longer exports `defineConfig` — CLI flags are the only configuration source. The programmatic `generateExports(config)` API and all CLI flags are unchanged. Dropping esbuild removes gen-x's only heavyweight dependency (a ~10MB platform binary) and shaves module-load time off every CLI invocation.
+
+### Patch Changes
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Emit customCondition/sourceOnly source paths relative to the target package.json's directory instead of the process cwd. Previously, running gen-x from outside the package directory (e.g. `gen-x -p packages/foo/package.json` from a monorepo root) produced source paths that neither Node nor TypeScript could resolve. `generateExports` gains an optional second `packageJsonPath` argument (defaults to `"package.json"`, preserving existing behavior for cwd-based calls).
+
+- [#32](https://github.com/ngrok-oss/gen-x/pull/32) [`65f197f`](https://github.com/ngrok-oss/gen-x/commit/65f197f0c653cd31c9e1b0c0d878e20f968c7645) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Fix `--replace` regex parsing corrupting patterns with escaped slashes at the edges: `/\/foo\//` was double-stripped into `/foo/` instead of matching a slash-delimited `foo`. The capture between the outer delimiters is now used as-is.
+
 ## 0.4.2
 
 ### Patch Changes
