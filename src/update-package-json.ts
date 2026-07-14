@@ -59,8 +59,6 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 		return;
 	}
 
-	console.log(`Writing exports to ${packageJsonPath}`);
-
 	// stringify the updated package.json object
 	let data = JSON.stringify(updatedPackageJson, null, 2);
 
@@ -72,6 +70,16 @@ async function updatePackageJson({ dryRun = false, exports, packageJsonPath }: A
 		eofNewline = "\n"; // Unix-style newline
 	}
 	data += eofNewline;
+
+	// skip the write entirely when the serialized output is byte-identical to
+	// the current file; avoids the atomic-write plumbing (and its fsync) and
+	// avoids churning package.json's mtime, which invalidates build caches
+	if (data === originalPackageJsonFile) {
+		console.log(`Exports unchanged, skipping write to ${packageJsonPath}`);
+		return;
+	}
+
+	console.log(`Writing exports to ${packageJsonPath}`);
 
 	// write the updated package.json file atomically: write to a unique temp
 	// file in the same directory, then rename it over package.json. A plain

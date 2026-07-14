@@ -27,8 +27,11 @@ async function gatherFilepaths(options: GatherFilepathsOptions): Promise<Array<s
 		ignore: options.exclude,
 	});
 
-	// alphasort the file paths
-	filepaths.sort((a, b) => a.localeCompare(b));
+	// alphasort the file paths.
+	// Default comparator = UTF-16 code-unit order: deterministic across machines and
+	// locales (localeCompare uses the ICU collator for the process locale, so LC_ALL/LANG
+	// changed the emitted exports order) and avoids ~6ms of ICU collator init per run.
+	filepaths.sort();
 
 	return filepaths;
 }

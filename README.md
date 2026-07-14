@@ -51,7 +51,6 @@ This will scan your `src/` directory and generate package.json exports like:
 - ✅ **Transform modes** - camelCase, kebab-case, PascalCase, snake_case
 - ✅ **Replace patterns** - Rename exports with regex or string patterns
 - ✅ **Custom conditions** - For monorepo live types
-- ✅ **Config files** - gen-x.config.{ts,js,json} with type-safe `defineConfig`
 - ✅ **Watch mode** - Automatically regenerate exports on file changes
 - ✅ **Source-only mode** - Emit plain source file paths without import/types conditions
 - ✅ **Cross-platform** - Always generates POSIX paths for package.json
@@ -59,43 +58,7 @@ This will scan your `src/` directory and generate package.json exports like:
 
 ## Configuration
 
-### Config File (Recommended)
-
-Create a `gen-x.config.ts` file for type-safe configuration:
-
-```typescript
-import { defineConfig } from "@ngrok/gen-x";
-
-export default defineConfig({
-	input: "src",
-	output: "dist",
-	mode: "camelCase",
-	customCondition: "@my-package/source",
-	include: ["**/*.{ts,tsx,js,jsx,css}"],
-	exclude: ["**/*.test.*", "**/*.d.ts"],
-});
-```
-
-Or use `gen-x.config.json`:
-
-```json
-{
-	"mode": "camelCase",
-	"customCondition": "@my-package/source"
-}
-```
-
-Or add to `package.json`:
-
-```json
-{
-	"genx": {
-		"mode": "camelCase"
-	}
-}
-```
-
-**Priority:** CLI flags > config file > defaults
+gen-x is configured entirely through CLI flags.
 
 ### CLI Options
 
@@ -151,11 +114,8 @@ npx gen-x --replace "/_pb/:=>" --replace "/^api-/:=>api/"
 
 For consuming packages in the same monorepo to use source TypeScript files:
 
-```typescript
-// gen-x.config.ts
-export default {
-	customCondition: "@my-org/my-package/source",
-};
+```bash
+npx gen-x --customCondition "@my-org/my-package/source"
 ```
 
 Generates:
@@ -211,7 +171,7 @@ Automatically regenerate exports when files are added, deleted, or renamed:
 npx gen-x --watch
 ```
 
-Config is loaded once at startup and reused on every regeneration, so there is no repeated overhead from esbuild transforms. Writes are skipped when exports haven't changed, avoiding unnecessary downstream rebuilds in tools like Turborepo.
+Writes are skipped when exports haven't changed, avoiding unnecessary downstream rebuilds in tools like Turborepo.
 
 ## API Usage
 

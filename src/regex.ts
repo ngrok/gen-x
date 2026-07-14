@@ -43,8 +43,8 @@ function parseRegexString(value: string): RegExp {
 		throw new Error(`Invalid regular expression string given: '${value}'`);
 	}
 
-	// the pattern without the leading and trailing slashes
-	const pattern = formatRegexPatternString(regexParts.at(1));
+	// capture group 1 already excludes the leading and trailing delimiter slashes
+	const pattern = regexParts.at(1) ?? "";
 	// the optional flags like 'i', 'g', 'm', etc.
 	const flags = parseRegExpFlags(regexParts.at(2));
 
@@ -58,16 +58,3 @@ export {
 	parseRegexString,
 	regexPattern,
 };
-
-/**
- * Format the regex pattern string by removing the leading and trailing slashes
- * so it can be passed to the RegExp constructor.
- */
-function formatRegexPatternString(value: string | undefined): string {
-	if (!value) {
-		return "";
-	}
-
-	// remove the leading and trailing slashes
-	return value.replace(/(^\/|\/$)/g, "");
-}

@@ -32,6 +32,11 @@ type Options = {
 	 * An optional list of replace tuples to rename export names.
 	 */
 	replace?: ReplaceTuples;
+	/**
+	 * The directory containing the package.json being updated. Source paths in
+	 * exports must be relative to this directory. Defaults to process.cwd().
+	 */
+	packageDir?: string;
 };
 
 /**
@@ -43,11 +48,19 @@ type Options = {
  * 3. Transform the name based on the mode
  */
 function makeExportItems(filepaths: Array<string>, options: Options): Array<ExportItem> {
-	// srcDir should be project-relative for package.json, not absolute
-	const srcDir = path.relative(process.cwd(), options.input) || ".";
+	// srcDir must be relative to the package.json's directory (export targets
+	// resolve relative to the package.json that declares them), not the cwd
+	const srcDir = path.relative(options.packageDir ?? process.cwd(), options.input) || ".";
+
+	// Every filepath from gatherFilepaths is absolute and prefixed by options.input,
+	// so a prefix slice avoids the per-file cost of path.relative. Fall back to
+	// path.relative for any path that does not match the invariant.
+	const prefix = options.input.endsWith(path.sep) ? options.input : options.input + path.sep;
 
 	return filepaths.map((filepath) => {
-		const exportPath = path.relative(options.input, filepath);
+		const exportPath = filepath.startsWith(prefix)
+			? filepath.slice(prefix.length)
+			: path.relative(options.input, filepath);
 		const name = makeNameFromFilepath(exportPath, options);
 
 		return {
