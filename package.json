@@ -5,7 +5,7 @@
   "author": "ngrok",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ngrok-oss/gen-x"
+    "url": "https://github.com/ngrok/gen-x"
   },
   "license": "MIT",
   "type": "module",
