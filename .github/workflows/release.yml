@@ -16,7 +16,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository == 'ngrok-oss/gen-x'
+    if: github.repository == 'ngrok/gen-x'
     steps:
       - uses: actions/checkout@v6
 

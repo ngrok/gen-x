@@ -205,7 +205,7 @@ Don't forget to [activate mise in your shell](https://mise.jdx.dev/getting-start
 Next, clone the repo and move into the directory:
 
 ```sh
-git clone https://github.com/ngrok-oss/gen-x.git
+git clone https://github.com/ngrok/gen-x.git
 cd gen-x
 ```
 
