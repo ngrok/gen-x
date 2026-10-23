@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.5.1
+
+### Patch Changes
+
+- [#35](https://github.com/ngrok/gen-x/pull/35) [`f58e83a`](https://github.com/ngrok/gen-x/commit/f58e83ab4ba9d703cc8b309fefd795d4e43ccac0) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Update Node to 24.22.1, pnpm to 12.15.0, mise to 2026.10.17, and all dependencies to latest
+
 ## 0.5.0
 
 ### Minor Changes
