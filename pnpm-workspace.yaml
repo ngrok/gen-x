@@ -1,9 +1,16 @@
-# Don't install packages that are less than 12 hours old
+# Don't install packages that are less than 6h old
 # This reduces the risk of installing compromised packages.
 # In most cases, malicious releases are discovered and removed from the registry
 # within an hour.
 # see: https://pnpm.io/settings#minimumreleaseage
-minimumReleaseAge: 720
+minimumReleaseAge: 360
+
+# Don't let pnpm switch itself to package.json#packageManager or record its own
+# version in pnpm-lock.yaml. mise and pnpm/action-setup already pin the version.
+# With the default (download), pnpm 12 writes a second YAML document into the
+# lockfile, and single-document readers (the Vercel CLI, the GitHub dependency
+# graph) stop parsing it. see: pnpm/pnpm#13805
+pmOnFail: ignore
 
 allowBuilds:
   esbuild: true
