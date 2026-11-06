@@ -1,6 +1,10 @@
 [settings]
 # Commit mise.lock so the toolchain is reproducible across machines.
 lockfile = true
+# Lock only the platforms that run this repo. The default set adds musl (Alpine),
+# and Node publishes musl builds after the official release, so a new Node pin
+# locks with no checksum.
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-arm64", "macos-x64", "windows-x64"]
 # Read Node from .nvmrc. pnpm is configured below via package.json#packageManager.
 idiomatic_version_file_enable_tools = ["node"]
 # Check aqua downloads against the sha256 in mise.lock only. Attestation lookups
@@ -9,6 +13,8 @@ idiomatic_version_file_enable_tools = ["node"]
 aqua.github_attestations = false
 
 [tools]
+ast-grep = "0.51.1"
+ripgrep = "15.2.0"
 # Keep pnpm's version single-sourced in package.json#packageManager.
 # The helper avoids needing Node before mise has installed Node.
 # Why aqua: the backend downloads pnpm's native release archive from GitHub.
@@ -30,11 +36,11 @@ run = "pnpm install --frozen-lockfile"
 description = "Prepare the repository after a fresh clone"
 depends = ["install"]
 
-# Refreshes mise.lock after bumping .nvmrc or package.json#packageManager.
-# After this, run `mise install` to materialize the new versions and commit
-# both the source pin and mise.lock together.
+# Refreshes mise.lock after bumping .nvmrc, package.json#packageManager, or
+# mise.toml tool pins. After this, run `mise install` to materialize the new
+# versions and commit both the source pin and mise.lock together.
 [tasks.relock]
-description = "Refresh mise.lock to match .nvmrc and package.json#packageManager"
+description = "Refresh mise.lock to match committed tool pins"
 run = "mise lock"
 
 # Catches drift between the committed pins and the active tools on PATH. Run
