@@ -25,7 +25,7 @@
     "precompile": "rm -rf dist tsconfig.compile.tsbuildinfo",
     "prepublishOnly": "pnpm run compile",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsrs --noEmit"
   },
   "bin": "./dist/cli.js",
   "files": [
@@ -50,6 +50,7 @@
     "@types/node": "24.19.2",
     "oxfmt": "0.76.0",
     "oxlint": "1.91.0",
+    "tsrs": "0.22.0-ts7.1.0-beta",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.1.0"

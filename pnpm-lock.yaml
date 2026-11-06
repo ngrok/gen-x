@@ -33,6 +33,9 @@ importers:
       oxlint:
         specifier: 1.91.0
         version: 1.91.0
+      tsrs:
+        specifier: 0.22.0-ts7.1.0-beta
+        version: 0.22.0-ts7.1.0-beta
       tsx:
         specifier: 4.23.15
         version: 4.23.15
@@ -653,6 +656,52 @@ packages:
   '@total-typescript/ts-reset@0.6.1':
     resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
 
+  '@tsrs/darwin-arm64@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-mY0dMEtFxig4h5At3nByjZe8E4DTDPqqz73kkxQ6gqW5K9ym+u/VHQhtnpTF6ZOTkYyjP3bTaj5T8HcyoGVddA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@tsrs/darwin-x64@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-dvsSnyU8rpI3OqTIH2xxjt9ThvZC52BsL6/LS69eWg7Ieq2oni1PnLels5gGTFqvHFoRbezi5Y0KY7PQ1OmK5w==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@tsrs/linux-arm64-gnu@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-igg42LxSN/DHFqafvDqZW2JNBMH8WIwc1JE/IY4QUDOXNhZnUfDgEu9xo1QYwbgryeo5llmhRwM4CI/BQUWF1Q==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@tsrs/linux-arm64-musl@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-f0zCqMkxPof7QVwjdgA8Fb0n6BtX5MOdILH/xfS+He6gRLCoECky0ejbsgLWCpB06GMlsL1gCbDr0/tmc91APg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@tsrs/linux-x64-gnu@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-/e511w7xXmxBf14paz8eMLUbmlIc33Sy1E00y1FqmnUK04FTotWl+80mNvIVX5NrlOOJgrh+B125t1CHWu/8vQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@tsrs/linux-x64-musl@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-B3aDOdS5+h77HcFep+KtOI+XmLm2G+FQPQC3KPSDjS/IG0tY9GPSc14mYnLwgO++dXluukO/oufk3J4Lo0CFjg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@tsrs/win32-x64@0.22.0-ts7.1.0-beta':
+    resolution: {integrity: sha512-cZ69w+wOECbU6YF5UWi15TK73eX1pgoMEHKSmUF4K8PbS7DPIh/nWMsdb3rM8Ee1SUZ9ONCx+S6myh64SRi3Bg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [win32]
+
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
@@ -1044,6 +1093,11 @@ packages:
   tinypool@2.2.0:
     resolution: {integrity: sha512-jBrmx4lYmaC9k/mgPbylxs7kBUxHtD8256up+HjLaDFfXScKJQyil+SWXSvhAtT7XHo+yTVlpB81PGmHP8oLSQ==}
     engines: {node: ^20.0.0 || >=22.0.0}
+
+  tsrs@0.22.0-ts7.1.0-beta:
+    resolution: {integrity: sha512-DEnEqQZRM3sHCV7MnQKVeTh61U2SX+0WksVlWp4eVayy0NffQ2oiCOjgH/Eye3sMPYkGwpM3tht3HtVI9NdURg==}
+    engines: {node: '>=16.20.0'}
+    hasBin: true
 
   tsx@4.23.15:
     resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
@@ -1548,6 +1602,27 @@ snapshots:
 
   '@total-typescript/ts-reset@0.6.1': {}
 
+  '@tsrs/darwin-arm64@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/darwin-x64@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/linux-arm64-gnu@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/linux-arm64-musl@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/linux-x64-gnu@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/linux-x64-musl@0.22.0-ts7.1.0-beta':
+    optional: true
+
+  '@tsrs/win32-x64@0.22.0-ts7.1.0-beta':
+    optional: true
+
   '@types/chai@5.2.3':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -1867,6 +1942,16 @@ snapshots:
       picomatch: 4.0.7
 
   tinypool@2.2.0: {}
+
+  tsrs@0.22.0-ts7.1.0-beta:
+    optionalDependencies:
+      '@tsrs/darwin-arm64': 0.22.0-ts7.1.0-beta
+      '@tsrs/darwin-x64': 0.22.0-ts7.1.0-beta
+      '@tsrs/linux-arm64-gnu': 0.22.0-ts7.1.0-beta
+      '@tsrs/linux-arm64-musl': 0.22.0-ts7.1.0-beta
+      '@tsrs/linux-x64-gnu': 0.22.0-ts7.1.0-beta
+      '@tsrs/linux-x64-musl': 0.22.0-ts7.1.0-beta
+      '@tsrs/win32-x64': 0.22.0-ts7.1.0-beta
 
   tsx@4.23.15:
     dependencies:
