@@ -1,5 +1,15 @@
 # @ngrok/gen-x
 
+## 0.6.0
+
+### Minor Changes
+
+- [#48](https://github.com/ngrok/gen-x/pull/48) [`999c7ba`](https://github.com/ngrok/gen-x/commit/999c7ba2f840876890b09eb7eb46761c271f166a) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Require Node 26 or later. Set `engines.node` to `>=26` and update `@types/node` to 26.6.6
+
+### Patch Changes
+
+- [#46](https://github.com/ngrok/gen-x/pull/46) [`655a343`](https://github.com/ngrok/gen-x/commit/655a343904376034087d099a2b43df0c05a23d2d) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Update Node to 26.13.0, pnpm to 12.18.0, mise to 2026.11.3, and dependencies within the 6h minimum release age. Type-check with tsrs instead of tsc
+
 ## 0.5.1
 
 ### Patch Changes
