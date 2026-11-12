@@ -40,7 +40,7 @@
     }
   },
   "dependencies": {
-    "commander": "15.0.0",
+    "commander": "15.1.0",
     "tinyglobby": "0.2.17"
   },
   "devDependencies": {
@@ -48,9 +48,9 @@
     "@changesets/cli": "3.0.3",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/node": "26.6.6",
-    "oxfmt": "0.76.0",
-    "oxlint": "1.91.0",
-    "tsrs": "0.22.0-ts7.1.0-beta",
+    "oxfmt": "0.78.0",
+    "oxlint": "1.93.0",
+    "tsrs": "0.25.0-ts7.1.0-beta",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
