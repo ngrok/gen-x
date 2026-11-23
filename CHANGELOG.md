@@ -1,5 +1,11 @@
 # @ngrok/gen-x
 
+## 0.6.1
+
+### Patch Changes
+
+- [#59](https://github.com/ngrok/gen-x/pull/59) [`0ef541b`](https://github.com/ngrok/gen-x/commit/0ef541b702ba7a001a51f8028d430e570f760b3d) Thanks [@cody-dot-js](https://github.com/cody-dot-js)! - Update the build toolchain and development dependencies. The published code does not change.
+
 ## 0.6.0
 
 ### Minor Changes
